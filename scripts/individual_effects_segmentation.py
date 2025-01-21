@@ -159,7 +159,10 @@ for i, task in enumerate(TASKS):
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(
         [
-            x.replace("_", " ").replace("identity", "none").capitalize()
+            x.replace("_", " ")
+            .replace("identity", "none")
+            .replace("bilateral filter", "speckle reduction")
+            .capitalize()
             for x in x_tick_labels
         ],
         rotation=90,

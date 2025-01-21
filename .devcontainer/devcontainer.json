@@ -13,5 +13,17 @@
         "--ipc=host"
     ],
     "remoteUser": "developer",
-    "postCreateCommand": "cd /home/developer/workspace && git clone --recursive git@github.com:adamtupper/ultrasound-augmentation.git && cd ultrasound-augmentation/.devcontainer && bash post_create_script.sh"
+    "postCreateCommand": "cd /home/developer/workspace && git clone --recursive git@github.com:adamtupper/ultrasound-augmentation.git && cd ultrasound-augmentation/.devcontainer && bash post_create_script.sh",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash"
+                    }
+                }
+            }
+        }
+    }
 }

@@ -77,11 +77,21 @@ identity_results = identity_results.drop(columns=["num_augmentations"])
 identity_results.round(3)
 
 # %%
+# Separate the #1 augmentation results from the rest of the results
+best_single_results = segmentation_results[
+    segmentation_results["num_augmentations"] == 1
+]
+best_single_results = best_single_results.drop(columns=["num_augmentations"])
+best_single_results.round(3)
+
+# %%
 # Calculate the difference between each number of augmentations and no augmentation
 # (identity) for each metric (test/dice) for each task
 results_df = segmentation_results.merge(
     identity_results, on="task", suffixes=("", "_identity")
 )
+results_df = results_df.merge(best_single_results, on="task", suffixes=("", "_no1"))
+
 results_df["test/loss_diff"] = (
     results_df["test/loss_mean"] - results_df["test/loss_mean_identity"]
 )
@@ -91,6 +101,15 @@ results_df["test/dice_diff"] = (
 results_df["test/dice_percent_change"] = (
     results_df["test/dice_diff"] / results_df["test/dice_mean_identity"] * 100
 )
+
+# Calculate the differences for the best single augmentation
+results_df["test/dice_diff_no1"] = (
+    results_df["test/dice_mean"] - results_df["test/dice_mean_no1"]
+)
+results_df["test/dice_percent_change_no1"] = (
+    results_df["test/dice_diff_no1"] / results_df["test/dice_mean_no1"] * 100
+)
+
 results_df.sort_index(axis=1).round(4)
 
 # %%
@@ -99,7 +118,13 @@ summary_df = results_df[
     + [col for col in results_df.columns if col.startswith("test/dice")]
 ]
 summary_df = summary_df.drop(
-    ["test/dice_mean_identity", "test/dice_sem_identity"], axis=1
+    [
+        "test/dice_mean_identity",
+        "test/dice_sem_identity",
+        "test/dice_mean_no1",
+        "test/dice_sem_no1",
+    ],
+    axis=1,
 )
 summary_df = summary_df.rename(
     columns={
@@ -107,11 +132,13 @@ summary_df = summary_df.rename(
         "test/dice_sem": "Dice SE",
         "test/dice_diff": "Dice Diff",
         "test/dice_percent_change": "Dice % Change",
+        "test/dice_diff_no1": "Dice Diff (No. 1)",
+        "test/dice_percent_change_no1": "Dice % Change (No. 1)",
     }
 )
 
 # %%
-task = "aul_liver_segmentation"
+task = "stanford_thyroid_segmentation"
 summary_df[summary_df["task"] == task].sort_values(
     "num_augmentations", ascending=True
 ).reset_index(drop=True).round(3)
@@ -133,7 +160,7 @@ titles = {
     "stanford_thyroid_segmentation": "Stanford Thyroid",
 }
 
-fig, axes = plt.subplots(2, 4, figsize=(12, 6))
+fig, axes = plt.subplots(2, 4, figsize=(12, 5.2))
 
 for i, task in enumerate(TASKS):
     subset_df = summary_df[summary_df["task"] == task]

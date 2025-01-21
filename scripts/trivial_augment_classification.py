@@ -88,12 +88,22 @@ identity_results = identity_results.drop(columns=["num_augmentations"])
 identity_results.round(3)
 
 # %%
+# Separate the #1 augmentation results from the rest of the results
+best_single_results = classification_results[
+    classification_results["num_augmentations"] == 1
+]
+best_single_results = best_single_results.drop(columns=["num_augmentations"])
+best_single_results.round(3)
+
+# %%
 # Calculate the difference between each number of augmentations and no augmentation
 # (identity) for each metric (test/precision, test/recall, test/f1,
 # test/avg_precision, test/acc) for each task
 results_df = classification_results.merge(
     identity_results, on="task", suffixes=("", "_identity")
 )
+results_df = results_df.merge(best_single_results, on="task", suffixes=("", "_no1"))
+
 results_df["test/loss_diff"] = (
     results_df["test/loss_mean"] - results_df["test/loss_mean_identity"]
 )
@@ -118,6 +128,17 @@ results_df["test/avg_precision_percent_change"] = (
     / results_df["test/avg_precision_mean_identity"]
     * 100
 )
+
+# Calculate the differences for the best single augmentation
+results_df["test/avg_precision_diff_no1"] = (
+    results_df["test/avg_precision_mean"] - results_df["test/avg_precision_mean_no1"]
+)
+results_df["test/avg_precision_percent_change_no1"] = (
+    results_df["test/avg_precision_diff_no1"]
+    / results_df["test/avg_precision_mean_no1"]
+    * 100
+)
+
 results_df.sort_index(axis=1).round(4)
 
 # %%
@@ -126,7 +147,13 @@ summary_df = results_df[
     + [col for col in results_df.columns if col.startswith("test/avg_precision")]
 ]
 summary_df = summary_df.drop(
-    ["test/avg_precision_mean_identity", "test/avg_precision_sem_identity"], axis=1
+    [
+        "test/avg_precision_mean_identity",
+        "test/avg_precision_sem_identity",
+        "test/avg_precision_mean_no1",
+        "test/avg_precision_sem_no1",
+    ],
+    axis=1,
 )
 summary_df = summary_df.rename(
     columns={
@@ -134,11 +161,13 @@ summary_df = summary_df.rename(
         "test/avg_precision_sem": "AP SE",
         "test/avg_precision_diff": "AP Diff",
         "test/avg_precision_percent_change": "AP % Change",
+        "test/avg_precision_diff_no1": "AP Diff (No. 1)",
+        "test/avg_precision_percent_change_no1": "AP % Change (No. 1)",
     }
 )
 
 # %%
-task = "aul_mass_classification"
+task = "pocus_classification"
 summary_df[summary_df["task"] == task].sort_values(
     "num_augmentations", ascending=True
 ).reset_index(drop=True).round(3)
@@ -160,7 +189,7 @@ titles = {
     "pocus_classification": "POCUS",
 }
 
-fig, axes = plt.subplots(2, 4, figsize=(12, 6))
+fig, axes = plt.subplots(2, 4, figsize=(12, 5.2))
 
 for i, task in enumerate(TASKS):
     subset_df = summary_df[summary_df["task"] == task]
