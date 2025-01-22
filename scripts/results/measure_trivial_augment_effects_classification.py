@@ -9,7 +9,7 @@ import seaborn as sns
 
 sns.set_theme(style="whitegrid", context="paper")
 
-RESULTS_DIR = "../outputs/results/"
+RESULTS_DIR = "../../results/"
 TASKS = {
     "aul_mass_classification": "aul_mass_v5_mass_classification",
     "butterfly_classification": "butterfly_v4_classification",
@@ -233,7 +233,7 @@ for i, task in enumerate(TASKS):
 axes[1, 3].axis("off")
 
 plt.tight_layout()
-plt.savefig("../outputs/figures/trivial_augment_classification.pdf")
+plt.savefig("../figures/trivial_augment_classification.pdf")
 plt.show()
 
 # %%

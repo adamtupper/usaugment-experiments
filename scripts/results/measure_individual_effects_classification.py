@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-RESULTS_DIR = "../outputs/results/individual"
+RESULTS_DIR = "../../results/individual"
 CLASSIFICATION_TASKS = {
     "aul_mass_classification": "aul_mass_v5_mass_classification",
     "butterfly_classification": "butterfly_v4_classification",
@@ -194,7 +194,7 @@ for i, task in enumerate(CLASSIFICATION_TASKS):
 axes[1, 3].axis("off")
 
 plt.tight_layout()
-plt.savefig("../outputs/figures/individual_effects_classification.pdf")
+plt.savefig("../figures/individual_effects_classification.pdf")
 plt.show()
 
 # %%

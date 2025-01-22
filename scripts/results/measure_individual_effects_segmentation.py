@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-RESULTS_DIR = "../outputs/results/individual/"
+RESULTS_DIR = "../../results/individual/"
 TASKS = {
     "aul_liver_segmentation": "aul_liver_v5_liver_segmentation",
     "aul_mass_segmentation": "aul_mass_v5_mass_segmentation",
@@ -176,7 +176,7 @@ for i, task in enumerate(TASKS):
 axes[1, 3].axis("off")
 
 plt.tight_layout()
-plt.savefig("../outputs/figures/individual_effects_segmentation.pdf")
+plt.savefig("../figures/individual_effects_segmentation.pdf")
 plt.show()
 
 # %%

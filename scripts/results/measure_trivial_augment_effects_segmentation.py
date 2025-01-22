@@ -9,7 +9,7 @@ import seaborn as sns
 
 sns.set_theme(style="whitegrid", context="paper")
 
-RESULTS_DIR = "../outputs/results/"
+RESULTS_DIR = "../../results/"
 TASKS = {
     "aul_liver_segmentation": "aul_liver_v5_liver_segmentation",
     "aul_mass_segmentation": "aul_mass_v5_mass_segmentation",
@@ -204,7 +204,7 @@ for i, task in enumerate(TASKS):
 axes[1, 3].axis("off")
 
 plt.tight_layout()
-plt.savefig("../outputs/figures/trivial_augment_segmentation.pdf")
+plt.savefig("../figures/trivial_augment_segmentation.pdf")
 plt.show()
 
 # %%
