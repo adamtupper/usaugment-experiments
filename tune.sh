@@ -41,7 +41,7 @@ fi
 
 # Copy data and code to compute node
 tar -xf $project/data/$1.tar.gz -C $SLURM_TMPDIR
-rsync -a $project/ultrasound-augmentation $SLURM_TMPDIR --exclude-from=$project/ultrasound-augmentation/.gitignore
+rsync -a $project/usaugment-experiments $SLURM_TMPDIR --exclude-from=$project/usaugment-experiments/.gitignore
 
 # Create virtual environment
 virtualenv --no-download $SLURM_TMPDIR/env
@@ -49,8 +49,8 @@ source $SLURM_TMPDIR/env/bin/activate
 
 # Install package and dependencies
 pip install --no-index --upgrade pip
-pip install --no-index -r $SLURM_TMPDIR/ultrasound-augmentation/requirements_cc.txt
-pip install --no-index -e $SLURM_TMPDIR/ultrasound-augmentation
+pip install --no-index -r $SLURM_TMPDIR/usaugment-experiments/requirements_cc.txt
+pip install --no-index -e $SLURM_TMPDIR/usaugment-experiments
 
 # Change to working directory
 cd $SLURM_TMPDIR
@@ -59,7 +59,7 @@ cd $SLURM_TMPDIR
 mkdir -p $scratch/$1/$2
 
 # Run trial
-python ultrasound-augmentation/src/usaugment/tune.py \
+python usaugment-experiments/src/usaugment/tune.py \
     output_dir=$scratch/$1/$2 \
     data_dir=$SLURM_TMPDIR \
     task=$2
