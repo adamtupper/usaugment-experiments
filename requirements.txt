@@ -10,7 +10,9 @@ monai==1.3.0
 matplotlib
 nibabel==5.2.1
 numpy==1.26.4
+opencv-contrib-python-headless==4.10.0.84
 opencv-python==4.10.0.84
+opencv-python-headless==4.10.0.84
 openpyxl
 optuna==4.0.0
 pandas==2.2.1

@@ -47,7 +47,7 @@ The `/src/usaugment/train.py` script trains a model for a specific task using a 
 ```bash
 python src/usaugment/train.py \
         output_dir=path/to/save/outputs \
-        data_dir=path/to/preprocessed/dataset \
+        data_dir=path/to/preprocessed/datasets \
         task=aul_liver_segmentation \
         augmentation=rotate \
         seed=0
@@ -55,7 +55,7 @@ python src/usaugment/train.py \
 
 The list of augmentations is located in the `src/usaugment/config/augmentation` directory. The script is configured using [Hydra](https://hydra.cc/). The configuration used in our experiments is the default and is read from the `src/usaugment/config` directory. You can view all the configuration options by using the `--help` flag.
 
-See `/scripts/slurm/launch_augmentation_evaluations.sh` for an example of how to train the models over all tasks, augmentations, and seeds.
+See `/scripts/slurm/launch_augmentation_evaluations.sh` for an example of how to train the models over all tasks, augmentations, and seeds. Depending on your hardware you may have to reduce the batch size and increase the number of gradient accumulation steps accordingly.
 
 #### Model Evaluation
 
@@ -63,7 +63,7 @@ After training, you can can evaluate a model on the test split using the `src/us
 
 ```bash
 python src/usaugment/evaluate.py \
-    data_dir=path/to/preprocessed/dataset \
+    data_dir=path/to/preprocessed/datasets \
     output_dir=path/to/save/outputs \
     task=aul_liver_segmentation \
     +results_dir=path/to/training/results/dir
@@ -78,7 +78,7 @@ The `src/usaugment/train_trivial_augment.py` script trains a model for a specifi
 ```bash
 python src/usaugment/train.py \
         output_dir=path/to/save/outputs \
-        data_dir=path/to/prepocessed/dataset \
+        data_dir=path/to/prepocessed/datasets \
         task=aul_liver_segmentation \
         augmentation=trivial_augment_aul_liver_segmentation \
         seed=0 \
@@ -87,7 +87,7 @@ python src/usaugment/train.py \
 
 The script is configured using [Hydra](https://hydra.cc/). The configuration used in our experiments is the default and is read from the `src/usaugment/config` directory. You can view all the configuration options by using the `--help` flag.
 
-See `/scripts/slurm/launch_trivial_augment_evaluations.sh` for an example of how to train models over all tasks, augmentation sets, and seeds.
+See `/scripts/slurm/launch_trivial_augment_evaluations.sh` for an example of how to train models over all tasks, augmentation sets, and seeds. Depending on your hardware you may have to reduce the batch size and increase the number of gradient accumulation steps accordingly.
 
 #### Model Evaluation
 
@@ -95,7 +95,7 @@ After training, you can can evaluate a model on the test split using the `src/us
 
 ```bash
 python src/usaugment/evaluate_trivial_augment.py \
-    data_dir=path/to/preprocessed/dataset \
+    data_dir=path/to/preprocessed/datasets \
     output_dir=path/to/save/outputs \
     task=aul_liver_segmentation \
     +results_dir=path/to/training/results/dir
@@ -110,6 +110,15 @@ The code for generating each of the figures and tables in the paper are included
 If you use our code for your research, please cite our paper!
 
 ```
+@misc{tupper2025,
+      title={Revisiting Data Augmentation for Ultrasound Images}, 
+      author={Adam Tupper and Christian Gagné},
+      year={2025},
+      eprint={2501.13193},
+      archivePrefix={arXiv},
+      primaryClass={eess.IV},
+      url={https://arxiv.org/abs/2501.13193}, 
+}
 ```
 
 ## Questions & Contributions
