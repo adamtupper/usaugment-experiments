@@ -37,7 +37,8 @@
             "extensions": [
                 "ms-toolsai.jupyter",
                 "charliermarsh.ruff",
-                "ms-toolsai.tensorboard"
+                "ms-toolsai.tensorboard",
+                "redhat.vscode-yaml"
             ]
         }
     }
