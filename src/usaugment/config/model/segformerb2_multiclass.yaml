@@ -1,0 +1,14 @@
+_target_: usaugment.models.segmentation.MultiClassSegmentationModel
+
+model:
+  _target_: transformers.SegformerForSemanticSegmentation.from_pretrained
+  pretrained_model_name_or_path: ${models_dir}/nvidia/mit-b2
+  num_labels: ${num_classes}
+
+optimizer_partial:
+  _partial_: true
+  _target_: torch.optim.AdamW
+  lr: ${lr}
+  weight_decay: ${weight_decay}
+
+num_classes: ${num_classes}

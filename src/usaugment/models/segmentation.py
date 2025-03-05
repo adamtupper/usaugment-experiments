@@ -2,13 +2,16 @@ import logging
 
 import lightning as L
 import torch
+import torch.nn as nn
 from monai.losses import DiceLoss
 from monai.networks.utils import one_hot
 from torch import optim
 from torchmetrics import Dice
 from torchvision.utils import make_grid
+from transformers.modeling_outputs import SemanticSegmenterOutput
 
 logger = logging.getLogger("lightning")
+logger.propagate = False
 
 
 class SegmentationModel(L.LightningModule):
@@ -25,7 +28,19 @@ class SegmentationModel(L.LightningModule):
         self.test_dice = Dice(ignore_index=0)
 
     def forward(self, x):
-        logits = self.model(x)
+        output = self.model(x)
+
+        if isinstance(output, SemanticSegmenterOutput):
+            # Upsample logits to input size
+            logits = nn.functional.interpolate(
+                output.logits,
+                size=x.shape[-2:],  # (height, width)
+                mode='bilinear',
+                align_corners=False
+            )
+        else:
+            logits = output
+
         return logits
 
     def on_validation_epoch_end(self):
@@ -39,7 +54,8 @@ class SegmentationModel(L.LightningModule):
             logger.info(log_message)
 
     def configure_optimizers(self):
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=self.trainer.estimated_stepping_batches)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(
+            self.optimizer, T_max=self.trainer.estimated_stepping_batches)
         lr_scheduler_config = {
             "scheduler": scheduler,
             "interval": "step",
@@ -48,7 +64,8 @@ class SegmentationModel(L.LightningModule):
 
     def _log_images(self, x):
         image_grid = make_grid(x, nrow=8).permute(1, 2, 0).cpu()
-        self.logger.experiment.log_image(name="train/x", image_data=image_grid, step=self.global_step)
+        self.logger.experiment.log_image(
+            name="train/x", image_data=image_grid, step=self.global_step)
 
 
 class BinarySegmentationModel(SegmentationModel):
@@ -112,8 +129,10 @@ class BinarySegmentationModel(SegmentationModel):
         overlay = true_masks + predicted_masks
         overlay_grid = make_grid(overlay, nrow=8).permute(1, 2, 0).cpu()
 
-        self.logger.experiment.log_image(name="val/masks", image_data=overlay_grid, step=self.global_step)
-        self.logger.experiment.log_image(name="val/x", image_data=image_grid, step=self.global_step)
+        self.logger.experiment.log_image(
+            name="val/masks", image_data=overlay_grid, step=self.global_step)
+        self.logger.experiment.log_image(
+            name="val/x", image_data=image_grid, step=self.global_step)
 
 
 class MultiClassSegmentationModel(SegmentationModel):
@@ -182,6 +201,8 @@ class MultiClassSegmentationModel(SegmentationModel):
             overlay = true_masks + predicted_masks
             overlay_grid = make_grid(overlay, nrow=8).permute(1, 2, 0).cpu()
 
-            self.logger.experiment.log_image(name=f"val/masks_class{i}", image_data=overlay_grid, step=self.global_step)
+            self.logger.experiment.log_image(
+                name=f"val/masks_class{i}", image_data=overlay_grid, step=self.global_step)
 
-        self.logger.experiment.log_image(name="val/x", image_data=image_grid, step=self.global_step)
+        self.logger.experiment.log_image(
+            name="val/x", image_data=image_grid, step=self.global_step)

@@ -12,3 +12,4 @@ submitit==1.5.1+computecanada
 torch==2.3.0+computecanada
 torchmetrics==1.4.0.post0+computecanada
 torchvision==0.18.0+computecanada
+transformers==4.49.0+computecanada
