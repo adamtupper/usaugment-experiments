@@ -2,7 +2,7 @@
 # Download model weights from GitHub and Huggingface Hub using Git LFS
 # For more information, see https://huggingface.co/docs/hub/en/models-downloading
 
-# Usage: bash scripts/download/download_models.sh <output_dir>
+# Usage: bash scripts/models/download_models.sh <output_dir>
 
 if [ -z "$1" ]
 then
