@@ -1,24 +1,39 @@
-# Print Job info
-echo "Current working directory: `pwd`"
-echo "Starting run at: `date`"
-echo ""
-echo "Job ID: $SLURM_JOB_ID"
-echo ""
+#!/bin/bash
+# Setup Slurm compute node
+
+# Usage: source scripts/slurm/setup_node.sh <dataset> <models_dir>
+
+if [ -z "$1" ]
+then
+    echo "Missing positional argument <dataset>"
+    exit 1
+fi
+
+if [ -z "$2" ]
+then
+    echo "Missing positional argument <models_dir>"
+    exit 1
+fi
 
 # Purge modules
 module purge
 
 # Load modules
-module load python/3.11 cuda cudnn rust httpproxy opencv
+module load gcc arrow git-lfs python/3.11 cuda cudnn rust httpproxy opencv
 
 # Set environment variables
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
-export TORCH_HOME=$project
+export TORCH_HOME=$SLURM_TMPDIR
 export NO_ALBUMENTATIONS_UPDATE=1
 export HYDRA_FULL_ERROR=1
+export HF_DATASETS_OFFLINE=1
+export HF_HUB_OFFLINE=1
+export HF_HOME=$SLURM_TMPDIR/huggingface/hub
 
-# Copy data and code to compute node ($1 is the dataset name)
+# Copy data, pre-trained models and code to compute node
+# $1 is the dataset name, $2 is the directory containing the model checkpoints
 tar -xf $project/data/$1.tar.gz -C $SLURM_TMPDIR
+cp -r $project/models/$2 $SLURM_TMPDIR
 rsync -a $project/usaugment-experiments $SLURM_TMPDIR --exclude-from=$project/usaugment-experiments/.gitignore
 
 # Create virtual environment
