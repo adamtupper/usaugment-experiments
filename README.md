@@ -59,7 +59,19 @@ See `/scripts/slurm/launch_augmentation_evaluations.sh` for an example of how to
 
 #### Model Evaluation
 
-After training, you can can evaluate a model on the test split using the `src/usaugment/evaluate.py` script. This script evaluates each model trained using each augmentation and generates a CSV file with the results. For example,
+After training, you can can evaluate the model on the test split using the `src/usaugment/evaluate_single_model.py` script. For example,
+
+```bash
+python src/usaugment/evaluate_single_model.py \
+    data_dir=path/to/preprocessed/datasets \
+    output_dir=path/to/save/outputs \
+    results_dir=null \
+    task=aul_liver_segmentation \
+    model=efficientnetb0_unet_binary \
+    +checkpoint=path/to/model.ckpt
+```
+
+Alternatively, after running a training sweep, you can evaluate all models on the test split using the `src/usaugment/evaluate.py` script. This script evaluates the checkpoints for each seed and augmentation and generates a CSV file with the results. For example,
 
 ```bash
 python src/usaugment/evaluate.py \
@@ -91,7 +103,7 @@ See `/scripts/slurm/launch_trivial_augment_evaluations.sh` for an example of how
 
 #### Model Evaluation
 
-After training, you can can evaluate a model on the test split using the `src/usaugment/evaluate_trivial_augment.py` script. This script evaluates each model trained using each augmentation set and generates a CSV file with the results. For example,
+After running a training sweep, you can can evaluate the models on the test split using the `src/usaugment/evaluate_trivial_augment.py` script. This script evaluates each model trained using each augmentation set and generates a CSV file with the results. For example,
 
 ```bash
 python src/usaugment/evaluate_trivial_augment.py \
