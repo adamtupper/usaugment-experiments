@@ -6,7 +6,7 @@ model:
   out_channels: ${num_classes}
   backbone: efficientnet-b5
   pretrained: True
-  dropout: ${dropout}
+  dropout: 0.4
 
 optimizer_partial:
   _partial_: true

@@ -6,7 +6,7 @@ model:
   pretrained: True
   in_channels: ${in_channels}
   num_classes: 1
-  dropout_rate: ${dropout}
+  dropout_rate: 0.4
 
 optimizer_partial:
   _partial_: true
