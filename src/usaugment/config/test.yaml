@@ -2,7 +2,7 @@ defaults:
   - train
   - _self_
 
-workers: 11
+workers: 10
 prefetch_factor: 2
 enable_progress_bar: True
 

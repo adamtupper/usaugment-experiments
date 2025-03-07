@@ -8,7 +8,7 @@ data_dir: ???
 output_dir: ???
 models_dir: ???
 seed: 1
-workers: 14
+workers: 10
 prefetch_factor: 4
 fast_dev_run: False
 enable_progress_bar: False
