@@ -116,7 +116,8 @@ def main(config: DictConfig) -> None:
         sampler=optuna.samplers.GridSampler(search_space),
     )
 
-    study.optimize(lambda trial: objective(trial, config), n_trials=10)
+    study.optimize(lambda trial: objective(trial, config),
+                   n_trials=config.trials_per_job)
 
     console_logger.info("Trial ended.")
 

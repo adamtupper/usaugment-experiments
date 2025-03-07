@@ -3,14 +3,12 @@
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
 #SBATCH --gres=gpu:v100:1
-#SBATCH --array 1-5%1 
-#SBATCH --time=02:00:00
 #SBATCH --mail-type=ALL
 
 # Perform a grid search over the learning rate and weight decay values 
 # using Optuna for a particular model on a task.
 
-# Usage: sbatch --job-name <name> usaugment-experiments/scripts/slurm/tune.sh <dataset> <task> <model>
+# Usage: sbatch --job-name <name> usaugment-experiments/scripts/slurm/tune.sh <dataset> <task> <model> <trials_per_job>
 
 # Print Job info
 echo "Current working directory: `pwd`"
@@ -50,6 +48,12 @@ then
     exit 1
 fi
 
+if [ -z "$4" ]
+then
+    echo "Missing positional argument <trials_per_job>"
+    exit 1
+fi
+
 # Copy data, pre-trained models and code to compute node ($1 is the dataset name)
 tar -xf $project/data/$1.tar.gz -C $SLURM_TMPDIR
 cp -r $project/models/* $SLURM_TMPDIR
@@ -78,6 +82,7 @@ python usaugment-experiments/src/usaugment/tune_size_arch_ablation.py \
     models_dir=$SLURM_TMPDIR \
     task=$2 \
     model=$3 \
+    trials_per_job=$4 \
     batch_size=64 \
     epochs=200
     
