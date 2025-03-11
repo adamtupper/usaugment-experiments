@@ -3,7 +3,7 @@
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
 #SBATCH --gres=gpu:v100:1
-#SBATCH --array 6-6%8
+#SBATCH --array 0-14%8
 #SBATCH --mail-type=ALL
 
 # Perform 10 repetitions using each augmentation for a particular model
@@ -82,7 +82,7 @@ cd $SLURM_TMPDIR
 augmentations=("bilateral_filter" "brightness" "contrast" "depth_attenuation" "flip_horizontal" "flip_vertical" "gamma" "gaussian_noise" "gaussian_shadow" "haze_artifact" "identity" "random_crop" "rotate" "translate" "zoom")
 augmentation=${augmentations[$SLURM_ARRAY_TASK_ID]}
 
-for seed in {7..10}; do
+for seed in {1..10}; do
     # Create output directory
     mkdir -p $scratch/$1/$2/$3/$augmentation/$seed
     
