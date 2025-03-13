@@ -6,25 +6,21 @@ transforms:
       # Identity
       - _target_: albumentations.NoOp
         p: 1.0
+      # Random crop
+      - _target_: albumentations.RandomCrop
+        width: 224
+        height: 224
+        p: 1.0
       # Rotate
       - _target_: albumentations.Rotate
         limit: [-30, 30]
         border_mode: 0
         value: 0
         p: 1.0
-      # Translate
-      - _target_: albumentations.ShiftScaleRotate
-        shift_limit: [-0.0625, 0.0625]
-        scale_limit: [0.0, 0.0]
-        rotate_limit: [0, 0]
-        interpolation: 1
-        border_mode: 0
-        value: 0
-        p: 1.0
-      # Random crop
-      - _target_: albumentations.RandomCrop
-        width: 224
-        height: 224
+      # Brightness
+      - _target_: albumentations.RandomBrightnessContrast
+        brightness_limit: [-0.2, 0.2]
+        contrast_limit: [0.0, 0.0]
         p: 1.0
       # Gaussian noise
       - _target_: albumentations.GaussNoise
@@ -32,13 +28,6 @@ transforms:
         mean: 0
         per_channel: False
         noise_scale_factor: 1
-        p: 1.0
-      # Bilateral filter
-      - _target_: usaugment.augmentation.BilateralFilter
-        _convert_: object
-        sigma_spatial: [0.05, 1.0]
-        sigma_color: [0.05, 1.0]
-        window_size: 5
         p: 1.0
       # Zoom
       - _target_: albumentations.ShiftScaleRotate
@@ -55,28 +44,24 @@ transforms:
         radius: [0.05, 0.95]
         sigma: [0.0, 0.1]
         p: 1.0
-      # Depth attenuation
-      - _target_: usaugment.augmentation.DepthAttenuation
+      # Flip vertical
+      - _target_: albumentations.VerticalFlip
+        p: 1.0
+      # Bilateral filter
+      - _target_: usaugment.augmentation.BilateralFilter
         _convert_: object
-        attenuation_rate: [0.0, 3.0]
-        max_attenuation: 0.0
+        sigma_spatial: [0.05, 1.0]
+        sigma_color: [0.05, 1.0]
+        window_size: 5
         p: 1.0
-      # Flip horizontal
-      - _target_: albumentations.HorizontalFlip
-        p: 1.0
-      # Gamma
-      - _target_: albumentations.RandomGamma
-        gamma_limit: [80, 120]
-        p: 1.0
-      # Contrast
-      - _target_: albumentations.RandomBrightnessContrast
-        brightness_limit: [0.0, 0.0]
-        contrast_limit: [-0.2, 0.2]
-        p: 1.0
-      # Brightness
-      - _target_: albumentations.RandomBrightnessContrast
-        brightness_limit: [-0.2, 0.2]
-        contrast_limit: [0.0, 0.0]
+      # Translate
+      - _target_: albumentations.ShiftScaleRotate
+        shift_limit: [-0.0625, 0.0625]
+        scale_limit: [0.0, 0.0]
+        rotate_limit: [0, 0]
+        interpolation: 1
+        border_mode: 0
+        value: 0
         p: 1.0
       # Gaussian shadow
       - _target_: usaugment.augmentation.GaussianShadow
@@ -85,8 +70,23 @@ transforms:
         sigma_x: [0.01, 0.2]
         sigma_y: [0.01, 0.2]
         p: 1.0
-      # Flip vertical
-      - _target_: albumentations.VerticalFlip
+      # Flip horizontal
+      - _target_: albumentations.HorizontalFlip
+        p: 1.0
+      # Contrast
+      - _target_: albumentations.RandomBrightnessContrast
+        brightness_limit: [0.0, 0.0]
+        contrast_limit: [-0.2, 0.2]
+        p: 1.0
+      # Depth attenuation
+      - _target_: usaugment.augmentation.DepthAttenuation
+        _convert_: object
+        attenuation_rate: [0.0, 3.0]
+        max_attenuation: 0.0
+        p: 1.0
+      # Gamma
+      - _target_: albumentations.RandomGamma
+        gamma_limit: [80, 120]
         p: 1.0
   - _target_: albumentations.OneOf
     p: 1.0
@@ -94,25 +94,21 @@ transforms:
       # Identity
       - _target_: albumentations.NoOp
         p: 1.0
+      # Random crop
+      - _target_: albumentations.RandomCrop
+        width: 224
+        height: 224
+        p: 1.0
       # Rotate
       - _target_: albumentations.Rotate
         limit: [-30, 30]
         border_mode: 0
         value: 0
         p: 1.0
-      # Translate
-      - _target_: albumentations.ShiftScaleRotate
-        shift_limit: [-0.0625, 0.0625]
-        scale_limit: [0.0, 0.0]
-        rotate_limit: [0, 0]
-        interpolation: 1
-        border_mode: 0
-        value: 0
-        p: 1.0
-      # Random crop
-      - _target_: albumentations.RandomCrop
-        width: 224
-        height: 224
+      # Brightness
+      - _target_: albumentations.RandomBrightnessContrast
+        brightness_limit: [-0.2, 0.2]
+        contrast_limit: [0.0, 0.0]
         p: 1.0
       # Gaussian noise
       - _target_: albumentations.GaussNoise
@@ -120,13 +116,6 @@ transforms:
         mean: 0
         per_channel: False
         noise_scale_factor: 1
-        p: 1.0
-      # Bilateral filter
-      - _target_: usaugment.augmentation.BilateralFilter
-        _convert_: object
-        sigma_spatial: [0.05, 1.0]
-        sigma_color: [0.05, 1.0]
-        window_size: 5
         p: 1.0
       # Zoom
       - _target_: albumentations.ShiftScaleRotate
@@ -143,28 +132,24 @@ transforms:
         radius: [0.05, 0.95]
         sigma: [0.0, 0.1]
         p: 1.0
-      # Depth attenuation
-      - _target_: usaugment.augmentation.DepthAttenuation
+      # Flip vertical
+      - _target_: albumentations.VerticalFlip
+        p: 1.0
+      # Bilateral filter
+      - _target_: usaugment.augmentation.BilateralFilter
         _convert_: object
-        attenuation_rate: [0.0, 3.0]
-        max_attenuation: 0.0
+        sigma_spatial: [0.05, 1.0]
+        sigma_color: [0.05, 1.0]
+        window_size: 5
         p: 1.0
-      # Flip horizontal
-      - _target_: albumentations.HorizontalFlip
-        p: 1.0
-      # Gamma
-      - _target_: albumentations.RandomGamma
-        gamma_limit: [80, 120]
-        p: 1.0
-      # Contrast
-      - _target_: albumentations.RandomBrightnessContrast
-        brightness_limit: [0.0, 0.0]
-        contrast_limit: [-0.2, 0.2]
-        p: 1.0
-      # Brightness
-      - _target_: albumentations.RandomBrightnessContrast
-        brightness_limit: [-0.2, 0.2]
-        contrast_limit: [0.0, 0.0]
+      # Translate
+      - _target_: albumentations.ShiftScaleRotate
+        shift_limit: [-0.0625, 0.0625]
+        scale_limit: [0.0, 0.0]
+        rotate_limit: [0, 0]
+        interpolation: 1
+        border_mode: 0
+        value: 0
         p: 1.0
       # Gaussian shadow
       - _target_: usaugment.augmentation.GaussianShadow
@@ -173,6 +158,21 @@ transforms:
         sigma_x: [0.01, 0.2]
         sigma_y: [0.01, 0.2]
         p: 1.0
-      # Flip vertical
-      - _target_: albumentations.VerticalFlip
+      # Flip horizontal
+      - _target_: albumentations.HorizontalFlip
+        p: 1.0
+      # Contrast
+      - _target_: albumentations.RandomBrightnessContrast
+        brightness_limit: [0.0, 0.0]
+        contrast_limit: [-0.2, 0.2]
+        p: 1.0
+      # Depth attenuation
+      - _target_: usaugment.augmentation.DepthAttenuation
+        _convert_: object
+        attenuation_rate: [0.0, 3.0]
+        max_attenuation: 0.0
+        p: 1.0
+      # Gamma
+      - _target_: albumentations.RandomGamma
+        gamma_limit: [80, 120]
         p: 1.0
