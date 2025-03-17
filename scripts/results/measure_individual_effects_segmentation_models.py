@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-RESULTS_DIR = "../../results/"
+RESULTS_DIR = "../../results/individual"
 TASKS = {
     # "aul_liver_segmentation": "aul_liver_v5_liver_segmentation",
     "aul_mass_segmentation": "aul_mass_v5_mass_segmentation",

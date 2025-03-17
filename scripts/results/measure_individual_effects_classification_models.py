@@ -8,11 +8,11 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-RESULTS_DIR = "../../results"
+RESULTS_DIR = "../../results/individual"
 CLASSIFICATION_TASKS = {
     "aul_mass_classification": "aul_mass_v5_mass_classification",
     # "butterfly_classification": "butterfly_v4_classification",
-    # "camus_classification": "camus_v4_classification",
+    "camus_classification": "camus_v4_classification",
     # "fatty_liver_classification": "fatty_liver_v3_classification",
     # "gbcu_classification": "gbcu_v2_classification",
     "mmotu_classification": "mmotu_v2_classification",
