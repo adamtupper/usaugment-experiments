@@ -29,7 +29,9 @@ def main(config: DictConfig) -> None:
     _, test_transform = get_data_loader_transforms(config)
 
     # Configure the data loader
-    test_loader = get_data_loader(config, "test", test_transform, shuffle=False)
+    test_loader = get_data_loader(
+        config, "test", test_transform, shuffle=False
+    )
 
     # Evaluate each model checkpoint
     results = []
@@ -37,13 +39,15 @@ def main(config: DictConfig) -> None:
         os.path.join(config.results_dir, "**/*.ckpt"), recursive=True
     )
     for checkpoint_path in checkpoint_paths:
-        num_augmentations = checkpoint_path.removeprefix(config.results_dir).split("/")[
-            1
-        ]
+        num_augmentations = checkpoint_path.removeprefix(
+            config.results_dir
+        ).split("/")[1]
         seed = checkpoint_path.removeprefix(config.results_dir).split("/")[2]
 
         # Instantiate training module
-        model = hydra.utils.get_class(config.model._target_).load_from_checkpoint(
+        model = hydra.utils.get_class(
+            config.model._target_
+        ).load_from_checkpoint(
             checkpoint_path, model=instantiate(config.model.model)
         )
 
@@ -84,7 +88,8 @@ def main(config: DictConfig) -> None:
     df.insert(0, col.name, col)
 
     # Save the results to a CSV file
-    df.to_csv(f"{config.task_name}_results.csv", index=False)
+    model_name = config.results_dir.strip("/").split("/")[-1]
+    df.to_csv(f"{config.task_name}_{model_name}_results.csv", index=False)
 
     # Display the mean and std. dev. of the key metric for each augmentation
     summary = df.groupby("num_augmentations")[f"test/{config.key_metric}"].agg(
