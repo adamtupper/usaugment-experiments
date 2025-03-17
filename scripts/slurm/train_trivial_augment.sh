@@ -99,6 +99,7 @@ for seed in {1..10}; do
         batch_size=64 \
         epochs=200 \
         lr=$4 \
-        weight_decay=$5
+        weight_decay=$5 \
+        top_n_augmentations=$top_n_augmentations
 done
     
