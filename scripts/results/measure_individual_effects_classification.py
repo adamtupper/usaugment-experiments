@@ -33,15 +33,21 @@ for i, task in enumerate(CLASSIFICATION_TASKS):
 
 # Calculate the mean and standard error of the mean for each metric (test/precision, test/recall, test/f1,
 # test/avg_precision, test/acc) for each task and augmentation
-classification_results["augmentation"] = classification_results["augmentation"].astype(
+classification_results["augmentation"] = classification_results[
+    "augmentation"
+].astype("category")
+classification_results["seed"] = classification_results["seed"].astype(
     "category"
 )
-classification_results["seed"] = classification_results["seed"].astype("category")
-classification_results["task"] = classification_results["task"].astype("category")
+classification_results["task"] = classification_results["task"].astype(
+    "category"
+)
 
 # Group by task and augmentation and calculate the mean and standard error of the mean for each metric
 classification_results = classification_results.drop(columns=["seed"])
-classification_results = classification_results.groupby(["task", "augmentation"]).agg(
+classification_results = classification_results.groupby(
+    ["task", "augmentation"]
+).agg(
     {
         "test/loss": ["mean", "sem"],
         "test/acc": ["mean", "sem"],
@@ -53,7 +59,8 @@ classification_results = classification_results.groupby(["task", "augmentation"]
 )
 classification_results = classification_results.reset_index()
 classification_results.columns = classification_results.columns = [
-    "_".join(a).strip("_") for a in classification_results.columns.to_flat_index()
+    "_".join(a).strip("_")
+    for a in classification_results.columns.to_flat_index()
 ]
 classification_results.round(3)
 
@@ -78,7 +85,8 @@ results_df["test/acc_diff"] = (
     results_df["test/acc_mean"] - results_df["test/acc_mean_identity"]
 )
 results_df["test/precision_diff"] = (
-    results_df["test/precision_mean"] - results_df["test/precision_mean_identity"]
+    results_df["test/precision_mean"]
+    - results_df["test/precision_mean_identity"]
 )
 results_df["test/recall_diff"] = (
     results_df["test/recall_mean"] - results_df["test/recall_mean_identity"]
@@ -100,10 +108,15 @@ results_df.sort_index(axis=1).round(4)
 # %%
 summary_df = results_df[
     ["task", "augmentation"]
-    + [col for col in results_df.columns if col.startswith("test/avg_precision")]
+    + [
+        col
+        for col in results_df.columns
+        if col.startswith("test/avg_precision")
+    ]
 ]
 summary_df = summary_df.drop(
-    ["test/avg_precision_mean_identity", "test/avg_precision_sem_identity"], axis=1
+    ["test/avg_precision_mean_identity", "test/avg_precision_sem_identity"],
+    axis=1,
 )
 summary_df = summary_df.rename(
     columns={
@@ -116,12 +129,14 @@ summary_df = summary_df.rename(
 
 # %%
 task = "pocus_classification"
-summary_df[summary_df["task"] == task].sort_values("AP", ascending=False).reset_index(
-    drop=True
-).round(3)
+summary_df[summary_df["task"] == task].sort_values(
+    "AP", ascending=False
+).reset_index(drop=True).round(3)
 
 # %%
-summary_df[["augmentation", "AP % Change"]].groupby("augmentation").mean().round(2)
+summary_df[["augmentation", "AP % Change"]].groupby(
+    "augmentation"
+).mean().round(2)
 
 # %%
 # For each task, plot the average precision for each augmentation using a bar chart
@@ -145,7 +160,6 @@ for i, task in enumerate(CLASSIFICATION_TASKS):
     identity_results = subset_df[subset_df["augmentation"] == "identity"]
     bottom = identity_results["AP"].values[0]
 
-    # subset_df = subset_df[subset_df["augmentation"] != "identity"]
     subset_df = subset_df.sort_values("AP")
 
     x_tick_labels = subset_df["augmentation"]
@@ -194,7 +208,7 @@ for i, task in enumerate(CLASSIFICATION_TASKS):
 axes[1, 3].axis("off")
 
 plt.tight_layout()
-plt.savefig("../figures/individual_effects_classification.pdf")
+plt.savefig("../../figures/individual_effects_classification.pdf")
 plt.show()
 
 # %%
