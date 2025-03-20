@@ -84,22 +84,26 @@ augmentation=trivial_augment_${2}_${3}
 top_n_augmentations=$SLURM_ARRAY_TASK_ID
 
 for seed in {1..10}; do
-    # Create output directory
-    mkdir -p $scratch/$1/$2/$3/$augmentation/$top_n_augmentations/$seed
+    if [ ! -d $scratch/$1/$2/$3/$augmentation/$top_n_augmentations/$seed ] ; then
+        # Run for this seed does not exist
+        
+        # Create output directory
+        mkdir -p $scratch/$1/$2/$3/$augmentation/$top_n_augmentations/$seed
     
-    # Train model
-    python usaugment-experiments/src/usaugment/train.py \
-        output_dir=$scratch/$1/$2/$3/$augmentation/$top_n_augmentations/$seed \
-        data_dir=$SLURM_TMPDIR \
-        models_dir=$SLURM_TMPDIR \
-        task=$2 \
-        model=$3 \
-        augmentation=$augmentation \
-        seed=$seed \
-        batch_size=64 \
-        epochs=200 \
-        lr=$4 \
-        weight_decay=$5 \
-        top_n_augmentations=$top_n_augmentations
+        # Train model
+        python usaugment-experiments/src/usaugment/train.py \
+            output_dir=$scratch/$1/$2/$3/$augmentation/$top_n_augmentations/$seed \
+            data_dir=$SLURM_TMPDIR \
+            models_dir=$SLURM_TMPDIR \
+            task=$2 \
+            model=$3 \
+            augmentation=$augmentation \
+            seed=$seed \
+            batch_size=64 \
+            epochs=200 \
+            lr=$4 \
+            weight_decay=$5 \
+            top_n_augmentations=$top_n_augmentations
+    fi
 done
     
