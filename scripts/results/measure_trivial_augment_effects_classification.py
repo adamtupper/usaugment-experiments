@@ -39,7 +39,8 @@ for i, task in enumerate(TASKS):
         os.path.join(RESULTS_DIR, f"individual/{TASKS[task]}_results.csv")
     )
     best = (
-        individual_results.groupby("augmentation")["test/avg_precision"].mean().idxmax()
+        individual_results.groupby("augmentation")[
+            "test/avg_precision"].mean().idxmax()
     )
     rows = individual_results[
         individual_results["augmentation"].isin([best, "identity"])
@@ -56,8 +57,10 @@ for i, task in enumerate(TASKS):
 classification_results["num_augmentations"] = classification_results[
     "num_augmentations"
 ].astype("category")
-classification_results["seed"] = classification_results["seed"].astype("category")
-classification_results["task"] = classification_results["task"].astype("category")
+classification_results["seed"] = classification_results["seed"].astype(
+    "category")
+classification_results["task"] = classification_results["task"].astype(
+    "category")
 
 # Group by task and number of augmentations and calculate the mean and standard error of the mean for each metric
 classification_results = classification_results.drop(columns=["seed"])
@@ -102,13 +105,15 @@ best_single_results.round(3)
 results_df = classification_results.merge(
     identity_results, on="task", suffixes=("", "_identity")
 )
-results_df = results_df.merge(best_single_results, on="task", suffixes=("", "_no1"))
+results_df = results_df.merge(
+    best_single_results, on="task", suffixes=("", "_no1"))
 
 results_df["test/loss_diff"] = (
     results_df["test/loss_mean"] - results_df["test/loss_mean_identity"]
 )
 results_df["test/precision_diff"] = (
-    results_df["test/precision_mean"] - results_df["test/precision_mean_identity"]
+    results_df["test/precision_mean"] -
+    results_df["test/precision_mean_identity"]
 )
 results_df["test/recall_diff"] = (
     results_df["test/recall_mean"] - results_df["test/recall_mean_identity"]
@@ -131,7 +136,8 @@ results_df["test/avg_precision_percent_change"] = (
 
 # Calculate the differences for the best single augmentation
 results_df["test/avg_precision_diff_no1"] = (
-    results_df["test/avg_precision_mean"] - results_df["test/avg_precision_mean_no1"]
+    results_df["test/avg_precision_mean"] -
+    results_df["test/avg_precision_mean_no1"]
 )
 results_df["test/avg_precision_percent_change_no1"] = (
     results_df["test/avg_precision_diff_no1"]
@@ -188,33 +194,157 @@ titles = {
     "mmotu_classification": "MMOTU",
     "pocus_classification": "POCUS",
 }
+colour_maps = {
+    "aul_mass_classification": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:green",
+        6: "tab:green",
+        7: "tab:green",
+        8: "tab:green",
+        9: "tab:green",
+        10: "tab:green",
+        11: "tab:green",
+        12: "tab:olive",
+        13: "tab:olive",
+        14: "tab:olive",
+    },
+    "butterfly_classification": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:olive",
+        5: "tab:olive",
+        6: "tab:olive",
+        7: "tab:olive",
+        8: "tab:olive",
+        9: "tab:olive",
+        10: "tab:red",
+        11: "tab:red",
+        12: "tab:red",
+        13: "tab:red",
+        14: "tab:red",
+    },
+    "camus_classification": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:green",
+        6: "tab:green",
+        7: "tab:olive",
+        8: "tab:olive",
+        9: "tab:olive",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:red",
+        13: "tab:red",
+        14: "tab:red",
+    },
+    "fatty_liver_classification": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:olive",
+        5: "tab:olive",
+        6: "tab:olive",
+        7: "tab:olive",
+        8: "tab:olive",
+        9: "tab:olive",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:olive",
+        13: "tab:olive",
+        14: "tab:olive",
+    },
+    "gbcu_classification": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:green",
+        6: "tab:green",
+        7: "tab:olive",
+        8: "tab:olive",
+        9: "tab:olive",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:olive",
+        13: "tab:olive",
+        14: "tab:red",
+    },
+    "mmotu_classification": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:green",
+        6: "tab:green",
+        7: "tab:green",
+        8: "tab:green",
+        9: "tab:green",
+        10: "tab:green",
+        11: "tab:green",
+        12: "tab:green",
+        13: "tab:green",
+        14: "tab:red",
+    },
+    "pocus_classification": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:olive",
+        3: "tab:olive",
+        4: "tab:olive",
+        5: "tab:olive",
+        6: "tab:olive",
+        7: "tab:olive",
+        8: "tab:olive",
+        9: "tab:olive",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:olive",
+        13: "tab:olive",
+        14: "tab:olive",
+    },
+}
+colour_to_marker = {
+    "tab:blue": "o",
+    "tab:green": "s",
+    "tab:olive": "D",
+    "tab:red": "*",
+}
 
 fig, axes = plt.subplots(2, 4, figsize=(12, 5.2))
 
 for i, task in enumerate(TASKS):
     subset_df = summary_df[summary_df["task"] == task]
-
-    identity_results = subset_df[subset_df["num_augmentations"] == 0]
-    bottom = identity_results["AP"].values[0]
-
     subset_df = subset_df.sort_values("num_augmentations")
 
     x_tick_labels = subset_df["num_augmentations"]
     x_ticks = np.arange(len(x_tick_labels))
     ax = axes[i // 4, i % 4]
-    ax.scatter(
-        x=x_ticks,
-        y=subset_df["AP"],
-    )
 
-    ax.errorbar(
-        x=x_ticks,
-        y=subset_df["AP"],
-        yerr=subset_df["AP SE"],
-        fmt="none",
-        elinewidth=1,
-        capsize=2,
-    )
+    colour_map = colour_maps[task]
+    for ap, se, x in zip(subset_df["AP"], subset_df["AP SE"], x_ticks):
+        marker = colour_to_marker[colour_map[x]]
+        ax.errorbar(
+            x=x,
+            y=ap,
+            yerr=se,
+            elinewidth=1,
+            capsize=2,
+            color=colour_map[x],
+            fmt=marker,
+            markersize=7 if marker == "*" else 5
+        )
 
     ax.set_title(titles[task])
     ax.grid(axis="both", linestyle="--", linewidth=0.5, which="both")
@@ -233,7 +363,7 @@ for i, task in enumerate(TASKS):
 axes[1, 3].axis("off")
 
 plt.tight_layout()
-plt.savefig("../figures/trivial_augment_classification.pdf")
+plt.savefig("../../figures/trivial_augment_classification.pdf")
 plt.show()
 
 # %%

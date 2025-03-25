@@ -38,7 +38,8 @@ for i, task in enumerate(TASKS):
     individual_results = pd.read_csv(
         os.path.join(RESULTS_DIR, f"individual/{TASKS[task]}_results.csv")
     )
-    best = individual_results.groupby("augmentation")["test/dice"].mean().idxmax()
+    best = individual_results.groupby("augmentation")[
+        "test/dice"].mean().idxmax()
     rows = individual_results[
         individual_results["augmentation"].isin([best, "identity"])
     ].copy()
@@ -90,7 +91,8 @@ best_single_results.round(3)
 results_df = segmentation_results.merge(
     identity_results, on="task", suffixes=("", "_identity")
 )
-results_df = results_df.merge(best_single_results, on="task", suffixes=("", "_no1"))
+results_df = results_df.merge(
+    best_single_results, on="task", suffixes=("", "_no1"))
 
 results_df["test/loss_diff"] = (
     results_df["test/loss_mean"] - results_df["test/loss_mean_identity"]
@@ -159,33 +161,157 @@ titles = {
     "psfhs_segmentation": "PSFHS",
     "stanford_thyroid_segmentation": "Stanford Thyroid",
 }
+colour_maps = {
+    "aul_liver_segmentation": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:olive",
+        6: "tab:olive",
+        7: "tab:green",
+        8: "tab:green",
+        9: "tab:olive",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:olive",
+        13: "tab:olive",
+        14: "tab:red",
+    },
+    "aul_mass_segmentation": {
+        0: "tab:blue",
+        1: "tab:olive",
+        2: "tab:olive",
+        3: "tab:olive",
+        4: "tab:olive",
+        5: "tab:olive",
+        6: "tab:olive",
+        7: "tab:olive",
+        8: "tab:olive",
+        9: "tab:olive",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:red",
+        13: "tab:red",
+        14: "tab:red",
+    },
+    "camus_segmentation": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:green",
+        6: "tab:green",
+        7: "tab:green",
+        8: "tab:green",
+        9: "tab:green",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:red",
+        13: "tab:red",
+        14: "tab:red",
+    },
+    "mmotu_segmentation": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:green",
+        6: "tab:green",
+        7: "tab:green",
+        8: "tab:green",
+        9: "tab:green",
+        10: "tab:green",
+        11: "tab:green",
+        12: "tab:green",
+        13: "tab:green",
+        14: "tab:olive",
+    },
+    "open_kidney_capsule_segmentation": {
+        0: "tab:blue",
+        1: "tab:olive",
+        2: "tab:olive",
+        3: "tab:olive",
+        4: "tab:olive",
+        5: "tab:olive",
+        6: "tab:olive",
+        7: "tab:olive",
+        8: "tab:olive",
+        9: "tab:olive",
+        10: "tab:olive",
+        11: "tab:red",
+        12: "tab:red",
+        13: "tab:red",
+        14: "tab:red",
+    },
+    "psfhs_segmentation": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:green",
+        6: "tab:green",
+        7: "tab:green",
+        8: "tab:olive",
+        9: "tab:olive",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:olive",
+        13: "tab:olive",
+        14: "tab:olive",
+    },
+    "stanford_thyroid_segmentation": {
+        0: "tab:blue",
+        1: "tab:green",
+        2: "tab:green",
+        3: "tab:green",
+        4: "tab:green",
+        5: "tab:green",
+        6: "tab:green",
+        7: "tab:green",
+        8: "tab:green",
+        9: "tab:green",
+        10: "tab:olive",
+        11: "tab:olive",
+        12: "tab:olive",
+        13: "tab:olive",
+        14: "tab:red",
+    },
+}
+colour_to_marker = {
+    "tab:blue": "o",
+    "tab:green": "s",
+    "tab:olive": "D",
+    "tab:red": "*",
+}
 
 fig, axes = plt.subplots(2, 4, figsize=(12, 5.2))
 
 for i, task in enumerate(TASKS):
     subset_df = summary_df[summary_df["task"] == task]
-
-    identity_results = subset_df[subset_df["num_augmentations"] == 0]
-    bottom = identity_results["Dice"].values[0]
-
     subset_df = subset_df.sort_values("num_augmentations")
 
     x_tick_labels = subset_df["num_augmentations"]
     x_ticks = np.arange(len(x_tick_labels))
     ax = axes[i // 4, i % 4]
-    ax.scatter(
-        x=x_ticks,
-        y=subset_df["Dice"],
-    )
 
-    ax.errorbar(
-        x=x_ticks,
-        y=subset_df["Dice"],
-        yerr=subset_df["Dice SE"],
-        fmt="none",
-        elinewidth=1,
-        capsize=2,
-    )
+    colour_map = colour_maps[task]
+    for dice, se, x in zip(subset_df["Dice"], subset_df["Dice SE"], x_ticks):
+        marker = colour_to_marker[colour_map[x]]
+        ax.errorbar(
+            x=x,
+            y=dice,
+            yerr=se,
+            elinewidth=1,
+            capsize=2,
+            color=colour_map[x],
+            fmt=colour_to_marker[colour_map[x]],
+            markersize=7 if marker == "*" else 5
+        )
 
     ax.set_title(titles[task])
     ax.grid(axis="both", linestyle="--", linewidth=0.5, which="both")
@@ -204,7 +330,7 @@ for i, task in enumerate(TASKS):
 axes[1, 3].axis("off")
 
 plt.tight_layout()
-plt.savefig("../figures/trivial_augment_segmentation.pdf")
+plt.savefig("../../figures/trivial_augment_segmentation.pdf")
 plt.show()
 
 # %%

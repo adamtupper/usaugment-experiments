@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-RESULTS_DIR = "../../results/"
+RESULTS_DIR = "../../results/individual"
 TASKS = {
     "aul_liver_segmentation": "aul_liver_v5_liver_segmentation",
     "aul_mass_segmentation": "aul_mass_v5_mass_segmentation",
@@ -130,32 +130,28 @@ fig, axes = plt.subplots(2, 4, figsize=(12, 6))
 
 for i, task in enumerate(TASKS):
     subset_df = summary_df[summary_df["task"] == task]
-
-    identity_results = subset_df[subset_df["augmentation"] == "identity"]
-    bottom = identity_results["Dice"].values[0]
-
     subset_df = subset_df.sort_values("Dice")
+    identity_results = subset_df[subset_df["augmentation"] == "identity"]
 
     x_tick_labels = subset_df["augmentation"]
     x_ticks = np.arange(len(x_tick_labels))
     ax = axes[i // 4, i % 4]
-    ax.scatter(
-        x=x_ticks,
-        y=subset_df["Dice"],
-    )
     ax.errorbar(
         x=x_ticks,
         y=subset_df["Dice"],
         yerr=subset_df["Dice SE"],
-        fmt="none",
+        fmt="o",
         elinewidth=1,
         capsize=2,
     )
-    ax.axhline(
-        y=identity_results["Dice"].values[0],
-        color="black",
-        linestyle=(0, (5, 5)),
-        linewidth=0.5,
+    ax.fill_between(
+        (-0.5, len(x_ticks) - 0.5),
+        identity_results["Dice"].values[0] +
+        identity_results["Dice SE"].values[0],
+        identity_results["Dice"].values[0] -
+        identity_results["Dice SE"].values[0],
+        color="tab:grey",
+        alpha=0.2,
     )
 
     ax.set_title(titles[task])
@@ -163,6 +159,7 @@ for i, task in enumerate(TASKS):
 
     ax.set_xlabel("")
     ax.set_xticks(x_ticks)
+    ax.set_xlim(-0.5, len(x_ticks) - 0.5)
     ax.set_xticklabels(
         [
             x.replace("_", " ")

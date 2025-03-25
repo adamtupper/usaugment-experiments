@@ -23,7 +23,7 @@ CLASSIFICATION_TASKS = {
 # Combine the classification results from each class into a a single data frame
 classification_results = None
 for task in CLASSIFICATION_TASKS:
-    for model in ["efficientnetb5_multiclass", "mitb2_multiclass"]:
+    for model in ["efficientnetb0_multiclass", "efficientnetb5_multiclass", "mitb2_multiclass"]:
         results = pd.read_csv(
             os.path.join(
                 RESULTS_DIR, f"{CLASSIFICATION_TASKS[task]}_{model}_results.csv")
@@ -140,6 +140,7 @@ summary_df[["augmentation", "AP % Change"]].groupby(
 sns.set_theme(style="whitegrid", context="paper")
 
 models = {
+    "efficientnetb0_multiclass": "EfficientNet-B0",
     "efficientnetb5_multiclass": "EfficientNet-B5",
     "mitb2_multiclass": "MiT-B2",
 }
@@ -153,39 +154,35 @@ titles = {
     "pocus_classification": "POCUS",
 }
 
-fig, axes = plt.subplots(2, 3, figsize=(12, 6))
+fig, axes = plt.subplots(3, 3, figsize=(12, 9), sharey="col")
 
 for i, task in enumerate(CLASSIFICATION_TASKS):
-    for j, model in enumerate(["efficientnetb5_multiclass", "mitb2_multiclass"]):
+    for j, model in enumerate(["efficientnetb0_multiclass", "efficientnetb5_multiclass", "mitb2_multiclass"]):
         subset_df = summary_df[(summary_df["task"] == task)
                                & (summary_df["model"] == model)]
-
-        identity_results = subset_df[subset_df["augmentation"] == "identity"]
-        bottom = identity_results["AP"].values[0]
-
-        # subset_df = subset_df[subset_df["augmentation"] != "identity"]
         subset_df = subset_df.sort_values("AP")
+        identity_results = subset_df[subset_df["augmentation"] == "identity"]
 
         x_tick_labels = subset_df["augmentation"]
         x_ticks = np.arange(len(x_tick_labels))
         ax = axes[j, i % 3]
-        ax.scatter(
-            x=x_ticks,
-            y=subset_df["AP"],
-        )
         ax.errorbar(
             x=x_ticks,
             y=subset_df["AP"],
             yerr=subset_df["AP SE"],
-            fmt="none",
+            fmt="o",
             elinewidth=1,
             capsize=2,
         )
-        ax.axhline(
-            y=identity_results["AP"].values[0],
-            color="black",
-            linestyle=(0, (5, 5)),
-            linewidth=0.5,
+
+        ax.fill_between(
+            (-0.5, len(x_ticks) - 0.5),
+            identity_results["AP"].values[0] +
+            identity_results["AP SE"].values[0],
+            identity_results["AP"].values[0] -
+            identity_results["AP SE"].values[0],
+            color="tab:grey",
+            alpha=0.2,
         )
 
         ax.set_title(f"{titles[task]} ({models[model]})")
@@ -193,6 +190,7 @@ for i, task in enumerate(CLASSIFICATION_TASKS):
 
         ax.set_xlabel("")
         ax.set_xticks(x_ticks)
+        ax.set_xlim(-0.5, len(x_ticks) - 0.5)
         ax.set_xticklabels(
             [
                 x.replace("_", " ")

@@ -156,32 +156,28 @@ fig, axes = plt.subplots(2, 4, figsize=(12, 6))
 
 for i, task in enumerate(CLASSIFICATION_TASKS):
     subset_df = summary_df[summary_df["task"] == task]
-
-    identity_results = subset_df[subset_df["augmentation"] == "identity"]
-    bottom = identity_results["AP"].values[0]
-
     subset_df = subset_df.sort_values("AP")
+    identity_results = subset_df[subset_df["augmentation"] == "identity"]
 
     x_tick_labels = subset_df["augmentation"]
     x_ticks = np.arange(len(x_tick_labels))
     ax = axes[i // 4, i % 4]
-    ax.scatter(
-        x=x_ticks,
-        y=subset_df["AP"],
-    )
     ax.errorbar(
         x=x_ticks,
         y=subset_df["AP"],
         yerr=subset_df["AP SE"],
-        fmt="none",
+        fmt="o",
         elinewidth=1,
         capsize=2,
     )
-    ax.axhline(
-        y=identity_results["AP"].values[0],
-        color="black",
-        linestyle=(0, (5, 5)),
-        linewidth=0.5,
+    ax.fill_between(
+        (-0.5, len(x_ticks) - 0.5),
+        identity_results["AP"].values[0] +
+        identity_results["AP SE"].values[0],
+        identity_results["AP"].values[0] -
+        identity_results["AP SE"].values[0],
+        color="tab:grey",
+        alpha=0.2,
     )
 
     ax.set_title(titles[task])
@@ -189,6 +185,7 @@ for i, task in enumerate(CLASSIFICATION_TASKS):
 
     ax.set_xlabel("")
     ax.set_xticks(x_ticks)
+    ax.set_xlim(-0.5, len(x_ticks) - 0.5)
     ax.set_xticklabels(
         [
             x.replace("_", " ")
