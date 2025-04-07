@@ -154,10 +154,10 @@ titles = {
     "pocus_classification": "POCUS",
 }
 
-fig, axes = plt.subplots(3, 3, figsize=(12, 9), sharey="col")
+fig, axes = plt.subplots(2, 3, figsize=(12, 6), sharey="col")
 
 for i, task in enumerate(CLASSIFICATION_TASKS):
-    for j, model in enumerate(["efficientnetb0_multiclass", "efficientnetb5_multiclass", "mitb2_multiclass"]):
+    for j, model in enumerate(["efficientnetb5_multiclass", "mitb2_multiclass"]):
         subset_df = summary_df[(summary_df["task"] == task)
                                & (summary_df["model"] == model)]
         subset_df = subset_df.sort_values("AP")

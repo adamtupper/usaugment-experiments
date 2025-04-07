@@ -133,10 +133,10 @@ titles = {
     "stanford_thyroid_segmentation": "Stanford Thyroid",
 }
 
-fig, axes = plt.subplots(3, 3, figsize=(12, 9))
+fig, axes = plt.subplots(2, 3, figsize=(12, 6))
 
 for i, task in enumerate(TASKS):
-    for j, model in enumerate(models.keys()):
+    for j, model in enumerate(["efficientnetb5_unet", "segformerb2"]):
         if task == "camus_segmentation":
             full_model_name = model + "_multiclass"
         else:

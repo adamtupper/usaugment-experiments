@@ -192,7 +192,7 @@ colour_schemes = {
     "aul_mass_segmentation": {
         "efficientnetb0_unet_binary": {
             0: "tab:blue",
-            1: "tab:olive",
+            1: "tab:green",
             2: "tab:olive",
             3: "tab:olive",
             4: "tab:olive",
@@ -201,8 +201,8 @@ colour_schemes = {
             7: "tab:olive",
             8: "tab:olive",
             9: "tab:olive",
-            10: "tab:olive",
-            11: "tab:olive",
+            10: "tab:red",
+            11: "tab:red",
             12: "tab:red",
             13: "tab:red",
             14: "tab:red",
@@ -216,12 +216,12 @@ colour_schemes = {
             5: "tab:green",
             6: "tab:green",
             7: "tab:green",
-            8: "tab:olive",
-            9: "tab:olive",
-            10: "tab:olive",
-            11: "tab:olive",
-            12: "tab:olive",
-            13: "tab:olive",
+            8: "tab:green",
+            9: "tab:green",
+            10: "tab:green",
+            11: "tab:green",
+            12: "tab:green",
+            13: "tab:green",
             14: "tab:olive",
         },
         "segformerb2_binary": {
@@ -234,10 +234,10 @@ colour_schemes = {
             6: "tab:green",
             7: "tab:green",
             8: "tab:green",
-            9: "tab:olive",
-            10: "tab:olive",
+            9: "tab:green",
+            10: "tab:green",
             11: "tab:green",
-            12: "tab:olive",
+            12: "tab:green",
             13: "tab:olive",
             14: "tab:olive",
         },
@@ -254,7 +254,7 @@ colour_schemes = {
             7: "tab:green",
             8: "tab:green",
             9: "tab:green",
-            10: "tab:olive",
+            10: "tab:green",
             11: "tab:olive",
             12: "tab:red",
             13: "tab:red",
@@ -270,8 +270,8 @@ colour_schemes = {
             6: "tab:green",
             7: "tab:green",
             8: "tab:green",
-            9: "tab:olive",
-            10: "tab:olive",
+            9: "tab:green",
+            10: "tab:green",
             11: "tab:olive",
             12: "tab:olive",
             13: "tab:olive",
@@ -337,10 +337,10 @@ colour_schemes = {
             3: "tab:green",
             4: "tab:green",
             5: "tab:green",
-            6: "tab:olive",
-            7: "tab:olive",
-            8: "tab:olive",
-            9: "tab:olive",
+            6: "tab:green",
+            7: "tab:green",
+            8: "tab:green",
+            9: "tab:green",
             10: "tab:olive",
             11: "tab:olive",
             12: "tab:olive",
@@ -356,10 +356,10 @@ colour_to_marker = {
     "tab:red": "*",
 }
 
-fig, axes = plt.subplots(3, 3, figsize=(12, 9))
+fig, axes = plt.subplots(2, 3, figsize=(12, 6))
 
 for i, task in enumerate(TASKS):
-    for j, model in enumerate(models.keys()):
+    for j, model in enumerate(["efficientnetb5_unet", "segformerb2"]):
         if task == "camus_segmentation":
             full_model_name = model + "_multiclass"
         else:
@@ -376,7 +376,9 @@ for i, task in enumerate(TASKS):
         ax = axes[j, i % 3]
 
         colour_map = colour_schemes[task][full_model_name]
-        for dice, se, x in zip(subset_df["Dice"], subset_df["Dice SE"], x_ticks):
+        for dice, se, x in zip(
+            subset_df["Dice"], subset_df["Dice SE"], x_ticks
+        ):
             marker = colour_to_marker[colour_map[x]]
             ax.errorbar(
                 x=x,
@@ -386,7 +388,7 @@ for i, task in enumerate(TASKS):
                 capsize=2,
                 color=colour_map[x],
                 fmt=marker,
-                markersize=7 if marker == "*" else 5
+                markersize=7 if marker == "*" else 5,
             )
 
         ax.set_title(f"{titles[task]} ({models[model]})")
