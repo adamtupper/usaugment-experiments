@@ -12,7 +12,7 @@ import numpy as np
 import scipy.io
 import skimage
 
-DATA_PATH = "/home-local2/adtup.extra.nobkp/project/data/raw/dataset_liver_bmodes_steatosis_assessment_IJCARS.mat"
+DATA_PATH = "/project/data/raw/dataset_liver_bmodes_steatosis_assessment_IJCARS.mat"
 
 # %%
 # Load data
@@ -50,7 +50,8 @@ plt.show()
 
 # %%
 # Verify that the steatosis level is consistent with the label (there should be 38 patients with steatosis >= 5)
-print("No. of patients with a steatosis level >= 5:", np.sum(seatosis[label.astype(bool)] >= 5))
+print("No. of patients with a steatosis level >= 5:",
+      np.sum(seatosis[label.astype(bool)] >= 5))
 
 # %%
 # Plot the class distribution

@@ -18,14 +18,15 @@ import skimage
 import skimage.io as io
 from skimage.util import compare_images
 
-ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/pocus_v4/"
+ROOT_DIR = "/project/data/pocus_v4/"
 
 # %%
 # Check that all images are 3-channel
 image_paths = glob.glob(os.path.join(ROOT_DIR, "*", "*.png"))
 for image_path in image_paths:
     image = io.imread(image_path)
-    assert (image.ndim == 3) and (image.shape[-1] == 3), f"Image {image_path} has {image.ndim} dimensions"
+    assert (image.ndim == 3) and (
+        image.shape[-1] == 3), f"Image {image_path} has {image.ndim} dimensions"
 
 
 # %%
@@ -39,7 +40,8 @@ for image_path in image_paths:
     if not channels_are_identical:
         affected_images.append(image_path)
 
-print(f"All channels are identical in {len(affected_images)} out of {len(image_paths)} images")
+print(
+    f"All channels are identical in {len(affected_images)} out of {len(image_paths)} images")
 
 # %%
 # Visualize each affected image and each channel separately
@@ -108,7 +110,8 @@ examples.head()
 # %%
 # Plot the class distribution of the each split
 
-sns.catplot(data=examples, x="pathology", hue="split", kind="count", height=5, aspect=2)
+sns.catplot(data=examples, x="pathology", hue="split",
+            kind="count", height=5, aspect=2)
 plt.title("Class Distribution of each Dataset Split")
 plt.xlabel("Pathology")
 plt.ylabel("Count")
@@ -121,7 +124,8 @@ fig, ax = plt.subplots()
 symbols = ["o", "s", "^"]
 for i, (pathology, group) in enumerate(examples.groupby("pathology")):
     ax.scatter(
-        group["width"], group["height"], label=pathology, marker=symbols[i], color=sns.color_palette()[i], alpha=0.5
+        group["width"], group["height"], label=pathology, marker=symbols[i], color=sns.color_palette()[
+            i], alpha=0.5
     )
 
 ax.set_xlabel("Width (pixels)")
@@ -137,7 +141,8 @@ plt.show()
 print("Image statistics:")
 widths = examples["width"]
 heights = examples["height"]
-print(f"Width  | avg (+/- std): {widths.mean():.2f} (+/- {widths.std():.2f}), min: {widths.min()}, max: {widths.max()}")
+print(
+    f"Width  | avg (+/- std): {widths.mean():.2f} (+/- {widths.std():.2f}), min: {widths.min()}, max: {widths.max()}")
 print(
     f"Height | avg (+/- std): {heights.mean():.2f} (+/- {heights.std():.2f}), min: {heights.min()}, max: {heights.max()}"
 )
@@ -160,7 +165,7 @@ def generate_scan_mask(image: np.ndarray):
     # Reflect the larger half of the mask to compensate for shadows
     _, width = mask.shape
     left_half = mask[:, : width // 2]
-    right_half = mask[:, width // 2 :]
+    right_half = mask[:, width // 2:]
     left_sum = np.sum(left_half)
     right_sum = np.sum(right_half)
 
@@ -199,7 +204,8 @@ for i, ax in enumerate(axes.flat):
         image = image.mean(axis=-1).astype(np.uint8)
 
     mask = generate_scan_mask(image)
-    assert mask.shape == image.shape[:2], f"Mask shape {mask.shape} does not match image shape {image.shape[:2]}"
+    assert mask.shape == image.shape[:
+                                     2], f"Mask shape {mask.shape} does not match image shape {image.shape[:2]}"
 
     ax.imshow(image, cmap="gray")
     ax.imshow(mask, alpha=0.4, vmin=0, vmax=1)
