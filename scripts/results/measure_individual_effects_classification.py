@@ -198,7 +198,7 @@ for i, task in enumerate(CLASSIFICATION_TASKS):
         fontsize=8,
     )
 
-    ax.set_ylabel("AP")
+    ax.set_ylabel("mAP")
     ax.yaxis.set_major_locator(plt.MaxNLocator(4))
     ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
 

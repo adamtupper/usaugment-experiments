@@ -316,14 +316,14 @@ for i, task in enumerate(TASKS):
     ax.set_title(titles[task])
     ax.grid(axis="both", linestyle="--", linewidth=0.5, which="both")
 
-    ax.set_xlabel("Number of Augmentations", fontsize=9)
+    ax.set_xlabel("Number of Augmentations")
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(
         x_tick_labels,
         fontsize=8,
     )
 
-    ax.set_ylabel("Dice", fontsize=9)
+    ax.set_ylabel("Dice")
     ax.yaxis.set_major_locator(plt.MaxNLocator(4))
     ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
 
