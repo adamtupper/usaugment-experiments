@@ -9,21 +9,20 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from albumentations.pytorch import ToTensorV2
+
 from usaugment.data import ClassificationDataset, SegmentationDataset
 
-GBCU_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/gbcu_v2"
-MMOTU_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/mmotu_v2"
-STANFORD_THYROID_ROOT_DIR = (
-    "/home-local2/adtup.extra.nobkp/project/data/stanford_thyroid_v4"
-)
-CAMUS_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/camus_v4"
-NFLD_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/fatty_liver_v3"
-AUL_LIVER_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/aul_liver_v5"
-AUL_MASS_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/aul_mass_v5"
-BUTTERFLY_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/butterfly_v4"
-OPEN_KIDNEY_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/open_kidney_v3"
-POCUS_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/pocus_v4"
-PSFHS_ROOT_DIR = "/home-local2/adtup.extra.nobkp/project/data/psfhs_v2"
+GBCU_ROOT_DIR = "/project/data/gbcu_v2"
+MMOTU_ROOT_DIR = "/project/data/mmotu_v2"
+STANFORD_THYROID_ROOT_DIR = "/project/data/stanford_thyroid_v4"
+CAMUS_ROOT_DIR = "/project/data/camus_v4"
+NFLD_ROOT_DIR = "/project/data/fatty_liver_v3"
+AUL_LIVER_ROOT_DIR = "/project/data/aul_liver_v5"
+AUL_MASS_ROOT_DIR = "/project/data/aul_mass_v5"
+BUTTERFLY_ROOT_DIR = "/project/data/butterfly_v4"
+OPEN_KIDNEY_ROOT_DIR = "/project/data/open_kidney_v3"
+POCUS_ROOT_DIR = "/project/data/pocus_v4"
+PSFHS_ROOT_DIR = "/project/data/psfhs_v2"
 
 
 # %%
@@ -61,7 +60,8 @@ datasets = [
         ],
         "label",
     ),
-    ("Fatty Liver", ClassificationDataset, NFLD_ROOT_DIR, ["Normal", "NFLD"], "label"),
+    ("Fatty Liver", ClassificationDataset,
+     NFLD_ROOT_DIR, ["Normal", "NFLD"], "label"),
     (
         "AUL Mass",
         ClassificationDataset,
@@ -102,17 +102,20 @@ datasets = [
     ),
 ]
 
-fig, axes = plt.subplots(nrows=2, ncols=math.ceil(len(datasets) / 2), figsize=(12, 6))
+fig, axes = plt.subplots(nrows=2, ncols=math.ceil(
+    len(datasets) / 2), figsize=(12, 6))
 
 for i, ax in zip(range(len(datasets)), axes.flat):
     title, factory, root_dir, tick_labels, label_key = datasets[i]
     ax.set_title(datasets[i])
 
     train_df = pd.DataFrame.from_records(
-        factory(root_dir, "train", transform=None, label_key=label_key).metadata
+        factory(root_dir, "train", transform=None,
+                label_key=label_key).metadata
     )
     val_df = pd.DataFrame.from_records(
-        factory(root_dir, "validation", transform=None, label_key=label_key).metadata
+        factory(root_dir, "validation", transform=None,
+                label_key=label_key).metadata
     )
     test_df = pd.DataFrame.from_records(
         factory(root_dir, "test", transform=None, label_key=label_key).metadata
@@ -129,14 +132,14 @@ for i, ax in zip(range(len(datasets)), axes.flat):
 
     ax.set_title(title)
     ax.set_xlabel(None)
-    ax.set_ylabel("Examples", fontsize=8)
+    ax.set_ylabel("Images", fontsize=8)
     ax.set_xticks(np.arange(len(tick_labels)))
     ax.set_xticklabels(tick_labels, rotation=45, ha="right", fontsize=8)
 
 axes[-1, -1].axis("off")
 
 plt.tight_layout()
-plt.savefig("../figures/classification_tasks.pdf")
+plt.savefig("../../figures/classification_tasks.pdf")
 plt.show()
 
 
@@ -202,7 +205,8 @@ datasets = [
     ),
 ]
 
-fig, axes = plt.subplots(nrows=2, ncols=len(datasets), figsize=(11, 3.5), sharey=True)
+fig, axes = plt.subplots(nrows=2, ncols=len(
+    datasets), figsize=(11, 3.5), sharey=True)
 for i, rows in enumerate(axes):
     for j, ax in enumerate(rows):
         title, dataset, index = datasets[j]
@@ -333,7 +337,8 @@ datasets = [
     ),
 ]
 
-fig, axes = plt.subplots(nrows=2, ncols=len(datasets), figsize=(11, 2.5), sharey=True)
+fig, axes = plt.subplots(nrows=2, ncols=len(
+    datasets), figsize=(11, 2.5), sharey=True)
 for i, rows in enumerate(axes):
     for j, ax in enumerate(rows):
         title, dataset, index = datasets[j]

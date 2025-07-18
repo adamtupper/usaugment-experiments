@@ -3,11 +3,13 @@
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 # %%
 # Load spreadsheet
-df = pd.read_excel("../Full-Text Ultrasound Articles Review.xlsx")
-df.drop(columns=["Publication Title", "DOI", "URL", "Conference Name"], inplace=True)
+df = pd.read_excel("../../Full-Text Ultrasound Articles Review.xlsx")
+df.drop(columns=["Publication Title", "DOI",
+        "URL", "Conference Name"], inplace=True)
 df.rename(
     columns={
         "Publication Year": "publication_year",
@@ -155,7 +157,8 @@ for augmentation in augmentations:
     if augmentation not in name_to_canonical_name:
         print(augmentation)
 
-print("Number of unique augmentations:", len(set(name_to_canonical_name.values())))
+print("Number of unique augmentations:", len(
+    set(name_to_canonical_name.values())))
 
 
 # %%
@@ -179,7 +182,8 @@ df["canonical_augmentations"] = df["augmentations"].apply(
 # %%
 # Count the number of uses of each augmentation
 augmentation_counts = (
-    df["canonical_augmentations"].str.split(";", expand=True).stack().value_counts()
+    df["canonical_augmentations"].str.split(
+        ";", expand=True).stack().value_counts()
 )
 
 for name, count in sorted(
@@ -200,6 +204,7 @@ canonical_name_to_group = {
     "translation_unspecified": "translation",
     "translation_vertical": "translation",
     "jitter": "translation",
+    "intensity_adjustment": "brightness_adjustment",
 }
 
 
@@ -363,7 +368,8 @@ short_display_name_map = {
     "shear": "Shear",
     "speckle_noise_addition_wang2022d": "Speckle noise",
     "speckle_parameter_map_augmentation_singla2022": "Speckle parameter map",
-    "speckle_reducing_anisotropic_diffusion_yu2002": "Speckle noise suppression",  # Used by Monkam et al. (2023)
+    # Used by Monkam et al. (2023)
+    "speckle_reducing_anisotropic_diffusion_yu2002": "Speckle noise suppression",
     "time_gain_compensation_singla2022": "Time gain compensation",
     "translation": "Translation",
     "unsharp_masking_monkam2023a": "Unsharp masking",
@@ -378,7 +384,6 @@ df["short_display_name"] = df["grouped_augmentations"].apply(
 
 # %%
 # Create a lollipop plot of the number of uses of each augmentation (group)
-import seaborn as sns
 
 sns.set_theme(style="whitegrid", context="paper")
 
@@ -495,14 +500,15 @@ plt.yticks(range(0, 65, 5))
 plt.ylim(0, 65)
 
 plt.tight_layout()
-plt.savefig("../figures/augmentation_use.png")
-plt.savefig("../figures/augmentation_use.pdf")
+plt.savefig("../../figures/augmentation_use.png")
+plt.savefig("../../figures/augmentation_use.pdf")
 plt.show()
 
 # %%
 # Create a pie chart of the augmentation counts
 augmentation_counts = (
-    df["grouped_augmentations"].str.split(";", expand=True).stack().value_counts()
+    df["grouped_augmentations"].str.split(
+        ";", expand=True).stack().value_counts()
 )
 
 plt.figure(figsize=(15, 12))
@@ -554,7 +560,8 @@ def count_augmentations(augmentations):
         return len(augmentations.split(";"))
 
 
-df["num_augmentations"] = df["grouped_augmentations"].apply(count_augmentations)
+df["num_augmentations"] = df["grouped_augmentations"].apply(
+    count_augmentations)
 
 
 # %%
@@ -576,36 +583,29 @@ plt.show()
 articles_per_year = df.groupby("publication_year").size()
 none_per_year = df[df["none"]].groupby("publication_year").size()
 rotation_per_year = df[df["rotation"]].groupby("publication_year").size()
-horizontal_flip_per_year = df[df["flip_horizontal"]].groupby("publication_year").size()
+flip_per_year = df[df["flip"]].groupby(
+    "publication_year").size()
 resize_per_year = df[df["resize"]].groupby("publication_year").size()
 random_crop_per_year = df[df["random_crop"]].groupby("publication_year").size()
-vertical_flip_per_year = df[df["flip_vertical"]].groupby("publication_year").size()
-translation_per_year = (
-    df[
-        df["translation_unspecified"]
-        | df["translation_horizontal"]
-        | df["translation_vertical"]
-    ]
-    .groupby("publication_year")
-    .size()
-)
+translation_per_year = df[df["translation"]].groupby("publication_year").size()
 contrast_adjustment_per_year = (
     df[df["contrast_adjustment"]].groupby("publication_year").size()
 )
 brightness_adjustment_per_year = (
     df[df["brightness_adjustment"]].groupby("publication_year").size()
 )
-gaussian_noise_per_year = df[df["gaussian_noise"]].groupby("publication_year").size()
+gaussian_noise_per_year = df[df["gaussian_noise"]
+                             ].groupby("publication_year").size()
 gamma_adjustment_per_year = (
     df[df["gamma_adjustment"]].groupby("publication_year").size()
 )
 
 none_per_year.plot(kind="line", figsize=(12, 12), label="None")
 rotation_per_year.plot(kind="line", figsize=(12, 12), label="Rotation")
-horizontal_flip_per_year.plot(kind="line", figsize=(12, 12), label="Horizontal flip")
+flip_per_year.plot(
+    kind="line", figsize=(12, 12), label="Horizontal flip")
 resize_per_year.plot(kind="line", figsize=(12, 12), label="Resize")
 random_crop_per_year.plot(kind="line", figsize=(12, 12), label="Random crop")
-vertical_flip_per_year.plot(kind="line", figsize=(12, 12), label="Vertical flip")
 translation_per_year.plot(kind="line", figsize=(12, 12), label="Translation")
 contrast_adjustment_per_year.plot(
     kind="line", figsize=(12, 12), label="Contrast adjustment"
@@ -613,8 +613,10 @@ contrast_adjustment_per_year.plot(
 brightness_adjustment_per_year.plot(
     kind="line", figsize=(12, 12), label="Brightness adjustment"
 )
-gaussian_noise_per_year.plot(kind="line", figsize=(12, 12), label="Gaussian noise")
-gamma_adjustment_per_year.plot(kind="line", figsize=(12, 12), label="Gamma adjustment")
+gaussian_noise_per_year.plot(
+    kind="line", figsize=(12, 12), label="Gaussian noise")
+gamma_adjustment_per_year.plot(
+    kind="line", figsize=(12, 12), label="Gamma adjustment")
 
 
 plt.legend()

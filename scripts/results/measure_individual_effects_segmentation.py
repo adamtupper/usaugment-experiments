@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-RESULTS_DIR = "../../results/individual/"
+RESULTS_DIR = "../../results/individual"
 TASKS = {
     "aul_liver_segmentation": "aul_liver_v5_liver_segmentation",
     "aul_mass_segmentation": "aul_mass_v5_mass_segmentation",
@@ -22,7 +22,9 @@ TASKS = {
 # %%
 # Combine the segmentation results from each class into a a single data frame
 for i, task in enumerate(TASKS):
-    results = pd.read_csv(os.path.join(RESULTS_DIR, f"{TASKS[task]}_results.csv"))
+    results = pd.read_csv(
+        os.path.join(RESULTS_DIR, f"{TASKS[task]}_results.csv")
+    )
     results["task"] = task
     if i == 0:
         segmentation_results = results
@@ -31,15 +33,17 @@ for i, task in enumerate(TASKS):
 
 # Calculate the mean and standard error of the mean for each metric (test/precision, test/recall, test/f1,
 # test/avg_precision, test/acc) for each task and augmentation
-segmentation_results["augmentation"] = segmentation_results["augmentation"].astype(
-    "category"
-)
+segmentation_results["augmentation"] = segmentation_results[
+    "augmentation"
+].astype("category")
 segmentation_results["seed"] = segmentation_results["seed"].astype("category")
 segmentation_results["task"] = segmentation_results["task"].astype("category")
 
 # Group by task and augmentation and calculate the mean and standard error of the mean for each metric
 segmentation_results = segmentation_results.drop(columns=["seed"])
-segmentation_results = segmentation_results.groupby(["task", "augmentation"]).agg(
+segmentation_results = segmentation_results.groupby(
+    ["task", "augmentation"]
+).agg(
     {
         "test/loss": ["mean", "sem"],
         "test/dice": ["mean", "sem"],
@@ -47,7 +51,8 @@ segmentation_results = segmentation_results.groupby(["task", "augmentation"]).ag
 )
 segmentation_results = segmentation_results.reset_index()
 segmentation_results.columns = segmentation_results.columns = [
-    "_".join(a).strip("_") for a in segmentation_results.columns.to_flat_index()
+    "_".join(a).strip("_")
+    for a in segmentation_results.columns.to_flat_index()
 ]
 segmentation_results.round(3)
 
@@ -98,12 +103,14 @@ summary_df = summary_df.rename(
 
 # %%
 task = "stanford_thyroid_segmentation"
-summary_df[summary_df["task"] == task].sort_values("Dice", ascending=False).reset_index(
-    drop=True
-).round(3)
+summary_df[summary_df["task"] == task].sort_values(
+    "Dice", ascending=False
+).reset_index(drop=True).round(3)
 
 # %%
-summary_df[["augmentation", "Dice % Change"]].groupby("augmentation").mean().round(2)
+summary_df[["augmentation", "Dice % Change"]].groupby(
+    "augmentation"
+).mean().round(2)
 
 # %%
 # For each task, plot the dice for each augmentation using a bar chart
@@ -123,33 +130,28 @@ fig, axes = plt.subplots(2, 4, figsize=(12, 6))
 
 for i, task in enumerate(TASKS):
     subset_df = summary_df[summary_df["task"] == task]
-
-    identity_results = subset_df[subset_df["augmentation"] == "identity"]
-    bottom = identity_results["Dice"].values[0]
-
-    subset_df = subset_df[subset_df["augmentation"] != "identity"]
     subset_df = subset_df.sort_values("Dice")
+    identity_results = subset_df[subset_df["augmentation"] == "identity"]
 
     x_tick_labels = subset_df["augmentation"]
     x_ticks = np.arange(len(x_tick_labels))
     ax = axes[i // 4, i % 4]
-    ax.scatter(
-        x=x_ticks,
-        y=subset_df["Dice"],
-    )
     ax.errorbar(
         x=x_ticks,
         y=subset_df["Dice"],
         yerr=subset_df["Dice SE"],
-        fmt="none",
+        fmt="o",
         elinewidth=1,
         capsize=2,
     )
-    ax.axhline(
-        y=identity_results["Dice"].values[0],
-        color="black",
-        linestyle=(0, (5, 5)),
-        linewidth=0.5,
+    ax.fill_between(
+        (-0.5, len(x_ticks) - 0.5),
+        identity_results["Dice"].values[0] +
+        identity_results["Dice SE"].values[0],
+        identity_results["Dice"].values[0] -
+        identity_results["Dice SE"].values[0],
+        color="tab:grey",
+        alpha=0.2,
     )
 
     ax.set_title(titles[task])
@@ -157,6 +159,7 @@ for i, task in enumerate(TASKS):
 
     ax.set_xlabel("")
     ax.set_xticks(x_ticks)
+    ax.set_xlim(-0.5, len(x_ticks) - 0.5)
     ax.set_xticklabels(
         [
             x.replace("_", " ")
@@ -176,7 +179,7 @@ for i, task in enumerate(TASKS):
 axes[1, 3].axis("off")
 
 plt.tight_layout()
-plt.savefig("../figures/individual_effects_segmentation.pdf")
+plt.savefig("../../figures/individual_effects_segmentation.pdf")
 plt.show()
 
 # %%

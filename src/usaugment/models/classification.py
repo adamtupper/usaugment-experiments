@@ -15,8 +15,12 @@ from torchmetrics.classification import (
     Recall,
 )
 from torchvision.utils import make_grid
+from transformers.models.segformer.modeling_segformer import (
+    SegFormerImageClassifierOutput,
+)
 
 logger = logging.getLogger("lightning")
+logger.propagate = False
 
 
 class ClassificationModel(L.LightningModule):
@@ -33,32 +37,45 @@ class ClassificationModel(L.LightningModule):
         if task == "binary":
             self.loss_function = F.binary_cross_entropy_with_logits
         elif task == "multiclass":
-            self.loss_function = nn.CrossEntropyLoss(label_smoothing=label_smoothing)
+            self.loss_function = nn.CrossEntropyLoss(
+                label_smoothing=label_smoothing)
 
         self.train_acc = Accuracy(task=task, num_classes=num_classes)
         self.train_precision = Precision(task=task, num_classes=num_classes)
         self.train_recall = Recall(task=task, num_classes=num_classes)
         self.train_f1 = F1Score(task=task, num_classes=num_classes)
-        self.train_avg_precision = AveragePrecision(task=task, num_classes=num_classes)
+        self.train_avg_precision = AveragePrecision(
+            task=task, num_classes=num_classes)
         self.val_acc = Accuracy(task=task, num_classes=num_classes)
         self.val_precision = Precision(task=task, num_classes=num_classes)
         self.val_recall = Recall(task=task, num_classes=num_classes)
         self.val_f1 = F1Score(task=task, num_classes=num_classes)
-        self.val_avg_precision = AveragePrecision(task=task, num_classes=num_classes)
-        self.val_pr_curve = PrecisionRecallCurve(task=task, num_classes=num_classes)
-        self.val_confusion_matrix = ConfusionMatrix(task=task, num_classes=num_classes)
+        self.val_avg_precision = AveragePrecision(
+            task=task, num_classes=num_classes)
+        self.val_pr_curve = PrecisionRecallCurve(
+            task=task, num_classes=num_classes)
+        self.val_confusion_matrix = ConfusionMatrix(
+            task=task, num_classes=num_classes)
         self.test_acc = Accuracy(task=task, num_classes=num_classes)
         self.test_precision = Precision(task=task, num_classes=num_classes)
         self.test_recall = Recall(task=task, num_classes=num_classes)
         self.test_f1 = F1Score(task=task, num_classes=num_classes)
-        self.test_avg_precision = AveragePrecision(task=task, num_classes=num_classes)
-        self.test_pr_curve = PrecisionRecallCurve(task=task, num_classes=num_classes)
-        self.test_confusion_matrix = ConfusionMatrix(task=task, num_classes=num_classes)
+        self.test_avg_precision = AveragePrecision(
+            task=task, num_classes=num_classes)
+        self.test_pr_curve = PrecisionRecallCurve(
+            task=task, num_classes=num_classes)
+        self.test_confusion_matrix = ConfusionMatrix(
+            task=task, num_classes=num_classes)
 
         self.register_buffer("val_avg_precision_best", torch.tensor(0.0))
 
     def forward(self, x):
-        logits = self.model(x)
+        outputs = self.model(x)
+        if isinstance(outputs, SegFormerImageClassifierOutput):
+            logits = outputs.logits
+        else:
+            logits = outputs
+
         return logits
 
     def training_step(self, batch, batch_idx):
@@ -68,7 +85,8 @@ class ClassificationModel(L.LightningModule):
             self._log_images(x)
 
         y_hat = self(x).squeeze()
-        loss = self.loss_function(y_hat, y.float() if self.task == "binary" else y)
+        loss = self.loss_function(
+            y_hat, y.float() if self.task == "binary" else y)
         self.log("train/loss", loss)
 
         self.train_acc(y_hat, y)
@@ -78,17 +96,21 @@ class ClassificationModel(L.LightningModule):
         self.train_avg_precision(y_hat, y)
 
         self.log("train/acc", self.train_acc, on_step=True, on_epoch=True)
-        self.log("train/precision", self.train_precision, on_step=True, on_epoch=True)
-        self.log("train/recall", self.train_recall, on_step=True, on_epoch=True)
+        self.log("train/precision", self.train_precision,
+                 on_step=True, on_epoch=True)
+        self.log("train/recall", self.train_recall,
+                 on_step=True, on_epoch=True)
         self.log("train/f1", self.train_f1, on_step=True, on_epoch=True)
-        self.log("train/avg_precision", self.train_avg_precision, on_step=True, on_epoch=True)
+        self.log("train/avg_precision", self.train_avg_precision,
+                 on_step=True, on_epoch=True)
 
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x).squeeze()
-        loss = self.loss_function(y_hat, y.float() if self.task == "binary" else y)
+        loss = self.loss_function(
+            y_hat, y.float() if self.task == "binary" else y)
         self.log("val/loss", loss)
 
         self.val_acc(y_hat, y)
@@ -104,7 +126,8 @@ class ClassificationModel(L.LightningModule):
     def test_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x).squeeze()
-        loss = self.loss_function(y_hat, y.float() if self.task == "binary" else y)
+        loss = self.loss_function(
+            y_hat, y.float() if self.task == "binary" else y)
         self.log("test/loss", loss)
 
         self.test_acc(y_hat, y)
@@ -229,7 +252,8 @@ class ClassificationModel(L.LightningModule):
         self.test_confusion_matrix.reset()
 
     def configure_optimizers(self):
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=self.trainer.estimated_stepping_batches)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(
+            self.optimizer, T_max=self.trainer.estimated_stepping_batches)
         lr_scheduler_config = {
             "scheduler": scheduler,
             "interval": "step",
@@ -238,7 +262,8 @@ class ClassificationModel(L.LightningModule):
 
     def _log_images(self, x):
         image_grid = make_grid(x, nrow=8).permute(1, 2, 0).cpu()
-        self.logger.experiment.log_image(name="train/x", image_data=image_grid, step=self.global_step)
+        self.logger.experiment.log_image(
+            name="train/x", image_data=image_grid, step=self.global_step)
 
 
 class BinaryClassificationModel(ClassificationModel):
@@ -248,4 +273,5 @@ class BinaryClassificationModel(ClassificationModel):
 
 class MultiClassClassificationModel(ClassificationModel):
     def __init__(self, model, optimizer_partial, num_classes, label_smoothing):
-        super().__init__(model, optimizer_partial, label_smoothing, task="multiclass", num_classes=num_classes)
+        super().__init__(model, optimizer_partial, label_smoothing,
+                         task="multiclass", num_classes=num_classes)

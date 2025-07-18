@@ -1,29 +1,45 @@
 {
-    "build": {
-        "dockerfile": "Dockerfile"
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-20.04",
+    "features": {
+        "ghcr.io/devcontainers/features/nvidia-cuda:1": {
+            "cudaVersion": "11.8",
+            "cudnnVersion": "8.9.6"
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "toolsToInstall": "virtualenv",
+            "version": "3.11"
+        },
+        "ghcr.io/devcontainers/features/git-lfs:1": {},
+        "ghcr.io/stuartleeks/dev-container-features/shell-history:0": {},
+        "ghcr.io/hwaien/devcontainer-features/match-host-time-zone": {}
     },
-    "workspaceFolder": "/home/developer/workspace",
-    "workspaceMount": "source=remote-workspace-usaugment-experiments,target=/home/developer/workspace,type=volume",
     "mounts": [
-        "source=/home-local2/adtup.extra.nobkp,target=/home-local2/adtup.extra.nobkp,type=bind,consistency=cached",
-        "source=/media/adtup/archives,target=/media/adtup/archives,type=bind,consistency=cached"
+        "source=${localEnv:project},target=/project,type=bind,consistency=cached",
+        "source=${localEnv:scratch},target=/scratch,type=bind,consistency=cached"
     ],
+    "hostRequirements": {
+        "gpu": "optional"
+    },
     "runArgs": [
-        "--gpus=all",
         "--ipc=host"
     ],
-    "remoteUser": "developer",
-    "postCreateCommand": "cd /home/developer/workspace && git clone --recursive git@github.com:adamtupper/usaugment-experiments.git && cd usaugment-experiments/.devcontainer && bash post_create_script.sh",
+    "postCreateCommand": "bash .devcontainer/post_create_script.sh",
+    "containerEnv": {
+        "HF_DATASETS_OFFLINE": "1",
+        "HF_HUB_OFFLINE": "1",
+        "HF_HOME": "/scratch/huggingface/hub",
+        "NO_ALBUMENTATIONS_UPDATE": "1",
+        "COMET_API_KEY": "${localEnv:COMET_API_KEY}",
+        "TORCH_HOME": "/scratch"
+    },
     "customizations": {
         "vscode": {
-            "settings": {
-                "terminal.integrated.defaultProfile.linux": "bash",
-                "terminal.integrated.profiles.linux": {
-                    "bash": {
-                        "path": "/bin/bash"
-                    }
-                }
-            }
+            "extensions": [
+                "ms-toolsai.jupyter",
+                "charliermarsh.ruff",
+                "ms-toolsai.tensorboard",
+                "redhat.vscode-yaml"
+            ]
         }
     }
 }

@@ -30,8 +30,10 @@ def main(config: DictConfig) -> None:
     train_transform, test_transform = get_data_loader_transforms(config)
 
     # Configure data loaders
-    train_loader = get_data_loader(config, "train", train_transform, shuffle=True)
-    val_loader = get_data_loader(config, "validation", test_transform, shuffle=False)
+    train_loader = get_data_loader(
+        config, "train", train_transform, shuffle=True)
+    val_loader = get_data_loader(
+        config, "validation", test_transform, shuffle=False)
 
     # Instantiate training module
     model = instantiate(config.model)
@@ -55,7 +57,8 @@ def main(config: DictConfig) -> None:
         max_epochs=config.epochs,
         deterministic=False,
         fast_dev_run=config.fast_dev_run,
-        callbacks=[checkpoint_callback, LearningRateMonitor(logging_interval="step")],
+        callbacks=[checkpoint_callback,
+                   LearningRateMonitor(logging_interval="step")],
         logger=logger,
         enable_progress_bar=config.enable_progress_bar,
         accumulate_grad_batches=config.accumulate_grad_batches,

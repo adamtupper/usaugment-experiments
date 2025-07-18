@@ -19,5 +19,4 @@ dataset:
   _target_: usaugment.data.ClassificationDataset
   label_key: label
 
-
 task_name: ${version}_mass_classification
