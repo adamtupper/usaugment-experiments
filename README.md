@@ -1,6 +1,6 @@
 # Revisiting Data Augmentation for Ultrasound Images
 
-This repository contains the code and documentation for reproducing the experiments presented in [Revisiting Data Augmentation for Ultrasound Images]().
+This repository contains the code and documentation for reproducing the experiments presented in our paper [Revisiting Data Augmentation for Ultrasound Images](https://openreview.net/forum?id=iGcxlTLIL5) published in TMLR.
 
 > [!IMPORTANT]
 > [UltraBench](https://github.com/adamtupper/ultrabench) and [USAugment](https://github.com/adamtupper/usaugment) have been released as standalone Python packages so that they can be used, updated and maintained more easily. The original versions are retained in this repository for the sole purpose of reproducing our original experiments. If you want to use UltraBench or USAugment we recommend using the maintained packaged versions.
@@ -122,14 +122,15 @@ The code for generating each of the figures and tables in the paper are included
 If you use our code for your research, please cite our paper!
 
 ```
-@misc{tupper2025,
-      title={Revisiting Data Augmentation for Ultrasound Images}, 
-      author={Adam Tupper and Christian Gagné},
-      year={2025},
-      eprint={2501.13193},
-      archivePrefix={arXiv},
-      primaryClass={eess.IV},
-      url={https://arxiv.org/abs/2501.13193}, 
+@article{
+tupper2025,
+title={Revisiting Data Augmentation for Ultrasound Images},
+author={Adam Tupper and Christian Gagn{\'e}},
+journal={Transactions on Machine Learning Research},
+issn={2835-8856},
+year={2025},
+url={https://openreview.net/forum?id=iGcxlTLIL5},
+note={}
 }
 ```
 
